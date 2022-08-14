@@ -1,0 +1,7 @@
+.vscode/*.log
+
+server
+server.exe
+
+!cmd/server
+!internal/app/server
