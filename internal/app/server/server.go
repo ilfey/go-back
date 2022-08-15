@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
@@ -47,6 +48,8 @@ func (s *Server) configureLogger() error {
 }
 
 func (s *Server) configureRouter() {
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
+
 	s.router.HandleFunc("/index", s.handleIndex())
 }
 
