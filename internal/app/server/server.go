@@ -1,7 +1,6 @@
 package server
 
 import (
-	"io"
 	"net/http"
 	"time"
 
@@ -49,14 +48,7 @@ func (s *Server) configureLogger() error {
 	return nil
 }
 
-func (s *Server) configureRouter() {
-	s.router.Use(s.loggingMiddleware)
-	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
-
-	s.router.HandleFunc("/index", s.handleIndex())
-}
-
-func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
+func (s *Server) loggingMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger := s.logger.WithFields(logrus.Fields{
 			"remote_addr": r.RemoteAddr,
@@ -86,9 +78,7 @@ func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *Server) handleIndex() http.HandlerFunc {
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Hello on my index page!!!")
-	}
+func (s *Server) configureRouter() {
+	s.router.Use(s.loggingMiddleWare)
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 }
