@@ -1,0 +1,23 @@
+### test word
+GET http://127.0.0.1:8000/text/word
+
+
+### test setence
+GET http://127.0.0.1:8000/text/sentence
+
+
+### test paragraph
+GET http://127.0.0.1:8000/text/paragraph
+
+
+### test 10 words
+GET http://127.0.0.1:8000/text/words/10
+
+
+### test 5 setences
+GET http://127.0.0.1:8000/text/sentences/5
+
+
+### test 3 paragraphs
+GET http://127.0.0.1:8000/text/paragraphs/3
+
