@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/JQweenq/go-back/internal/app/server"
+	"github.com/ilfey/go-back/internal/app/server"
 )
 
 func main() {

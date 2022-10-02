@@ -1,4 +1,4 @@
-module github.com/JQweenq/go-back
+module github.com/ilfey/go-back
 
 go 1.19
 
