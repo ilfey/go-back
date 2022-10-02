@@ -3,6 +3,7 @@ package server
 import (
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -49,9 +50,40 @@ func (s *Server) configureLogger() error {
 }
 
 func (s *Server) configureRouter() {
+	s.router.Use(s.loggingMiddleware)
 	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
 	s.router.HandleFunc("/index", s.handleIndex())
+}
+
+func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		logger := s.logger.WithFields(logrus.Fields{
+			"remote_addr": r.RemoteAddr,
+		})
+		logger.Infof("started %s %s", r.Method, r.RequestURI)
+
+		start := time.Now()
+		rw := &responseWriter{w, http.StatusOK}
+		next.ServeHTTP(rw, r)
+
+		var level logrus.Level
+		switch {
+		case rw.code >= 500:
+			level = logrus.ErrorLevel
+		case rw.code >= 400:
+			level = logrus.WarnLevel
+		default:
+			level = logrus.InfoLevel
+		}
+		logger.Logf(
+			level,
+			"completed with %d %s in %v",
+			rw.code,
+			http.StatusText(rw.code),
+			time.Since(start),
+		)
+	})
 }
 
 func (s *Server) handleIndex() http.HandlerFunc {
