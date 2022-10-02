@@ -15,22 +15,23 @@ type Server struct {
 	router *mux.Router
 }
 
-func New(config *Config) *Server {
+func New() *Server {
 	return &Server{
-		config: config,
 		logger: logrus.New(),
 		router: mux.NewRouter(),
 	}
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start(config *Config) error {
+	s.logger.Info("starting server")
+
+	s.config = config
+
 	if err := s.configureLogger(); err != nil {
 		return err
 	}
 
 	s.configureRouter()
-
-	s.logger.Info("starting server")
 
 	return http.ListenAndServe(s.config.Address, s.router)
 }
