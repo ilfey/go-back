@@ -1,20 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
-	"github.com/JQweenq/go-back/internal/app/server"
+	"github.com/ilfey/go-back/internal/app/server"
 )
 
 func main() {
 	config := server.NewConfig()
+	s := server.New()
 
-	fmt.Printf("%+v\n", config)
-
-	s := server.New(config)
-
-	if err := s.Start(); err != nil {
+	if err := s.Start(config); err != nil {
 		log.Fatal(err)
 	}
 }

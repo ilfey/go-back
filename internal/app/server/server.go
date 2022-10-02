@@ -1,11 +1,12 @@
 package server
 
 import (
-	"io"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/ilfey/go-back/internal/app/text"
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,22 +16,23 @@ type Server struct {
 	router *mux.Router
 }
 
-func New(config *Config) *Server {
+func New() *Server {
 	return &Server{
-		config: config,
 		logger: logrus.New(),
 		router: mux.NewRouter(),
 	}
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start(config *Config) error {
+	s.logger.Info("starting server")
+
+	s.config = config
+
 	if err := s.configureLogger(); err != nil {
 		return err
 	}
 
 	s.configureRouter()
-
-	s.logger.Info("starting server")
 
 	return http.ListenAndServe(s.config.Address, s.router)
 }
@@ -47,15 +49,40 @@ func (s *Server) configureLogger() error {
 	return nil
 }
 
-func (s *Server) configureRouter() {
-	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
+func (s *Server) loggingMiddleWare(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		logger := s.logger.WithFields(logrus.Fields{
+			"remote_addr": r.RemoteAddr,
+		})
+		logger.Infof("started %s %s", r.Method, r.RequestURI)
 
-	s.router.HandleFunc("/index", s.handleIndex())
+		start := time.Now()
+		rw := &responseWriter{w, http.StatusOK}
+		next.ServeHTTP(rw, r)
+
+		var level logrus.Level
+		switch {
+		case rw.code >= 500:
+			level = logrus.ErrorLevel
+		case rw.code >= 400:
+			level = logrus.WarnLevel
+		default:
+			level = logrus.InfoLevel
+		}
+		logger.Logf(
+			level,
+			"completed with %d %s in %v",
+			rw.code,
+			http.StatusText(rw.code),
+			time.Since(start),
+		)
+	})
 }
 
-func (s *Server) handleIndex() http.HandlerFunc {
+func (s *Server) configureRouter() {
+	s.router.Use(s.loggingMiddleWare)
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
-	return func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Hello on my index page!!!")
-	}
+	textHandler := text.New()
+	textHandler.Register(s.router)
 }
