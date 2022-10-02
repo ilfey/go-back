@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/ilfey/go-back/internal/app/text"
 	"github.com/sirupsen/logrus"
 )
 
@@ -81,4 +82,7 @@ func (s *Server) loggingMiddleWare(next http.Handler) http.Handler {
 func (s *Server) configureRouter() {
 	s.router.Use(s.loggingMiddleWare)
 	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
+
+	textHandler := text.New()
+	textHandler.Register(s.router)
 }
