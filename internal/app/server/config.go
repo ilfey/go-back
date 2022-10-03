@@ -1,7 +1,6 @@
 package server
 
 import (
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -13,9 +12,7 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
-	}
+	godotenv.Load()
 
 	return &Config{
 		Address:  getEnv("ADDRESS", ":8000"),
