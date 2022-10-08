@@ -1,6 +1,7 @@
 package img
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -53,6 +54,30 @@ func (h *handler) createImage(p imageParams) *image.RGBA {
 	return img
 }
 
+func (h *handler) parseHexColor(s string) color.RGBA {
+	var c color.RGBA
+	c.A = 255
+	switch len(s) {
+	case 9:
+		fmt.Sscanf(s, "#%02x%02x%02x%02x", &c.R, &c.G, &c.B, &c.A)
+	case 7:
+		fmt.Sscanf(s, "#%02x%02x%02x", &c.R, &c.G, &c.B)
+	case 5:
+		fmt.Sscanf(s, "#%1x%1x%1x%1x", &c.R, &c.G, &c.B, &c.A)
+		c.R *= 17
+		c.G *= 17
+		c.B *= 17
+		c.A *= 17
+
+	case 4:
+		fmt.Sscanf(s, "#%1x%1x%1x", &c.R, &c.G, &c.B)
+		c.R *= 17
+		c.G *= 17
+		c.B *= 17
+	}
+	return c
+}
+
 func (h *handler) handlePNG() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -75,18 +100,8 @@ func (h *handler) handlePNG() http.HandlerFunc {
 			y:          y,
 			tan:        float64(y) / float64(x),
 			border:     5,
-			background: color.RGBA{
-				R: 255,
-				G: 255,
-				B: 255,
-				A: 255,
-			},
-			foreground: color.RGBA{
-				R: 0,
-				G: 0,
-				B: 0,
-				A: 255,
-			},
+			background: h.parseHexColor("#fff"),
+			foreground: h.parseHexColor("#000"),
 		})
 
 		w.WriteHeader(200)
