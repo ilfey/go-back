@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/ilfey/go-back/internal/app/img"
 	"github.com/ilfey/go-back/internal/app/text"
 	"github.com/sirupsen/logrus"
 )
@@ -85,4 +86,6 @@ func (s *Server) configureRouter() {
 
 	textHandler := text.New()
 	textHandler.Register(s.router)
+	imgHandler := img.New()
+	imgHandler.Register(s.router)
 }
