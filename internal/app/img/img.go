@@ -15,12 +15,12 @@ import (
 )
 
 type imageParams struct {
-	x          int
-	y          int
-	tan        float64
-	border     int
-	background color.RGBA
-	foreground color.RGBA
+	x      int
+	y      int
+	bg     string
+	fg     string
+	tan    float64
+	border int
 }
 
 type handler struct{}
@@ -33,49 +33,58 @@ func (h *handler) Register(router *mux.Router) {
 	router.HandleFunc("/img/{x:[0-9]+}x{y:[0-9]+}.png", h.handlePNG())
 }
 
-func (h *handler) createImage(p imageParams) *image.RGBA {
+func (h *handler) createImage(p imageParams) (*image.RGBA, error) {
+	bg, err := h.parseHexColor(p.bg)
+	if err != nil {
+		return nil, err
+	}
+	fg, err := h.parseHexColor(p.fg)
+	if err != nil {
+		return nil, err
+	}
+
 	img := image.NewRGBA(image.Rect(0, 0, p.x, p.y))
 
 	for yi := img.Bounds().Min.Y; yi < img.Bounds().Max.Y; yi++ {
 		for xi := img.Bounds().Min.X; xi < img.Bounds().Max.X; xi++ {
 			//set background
-			img.SetRGBA(xi, yi, p.background)
+			img.SetRGBA(xi, yi, bg)
 			// create border
 			if xi > p.x-p.border || xi < p.border || yi > p.y-p.border || yi < p.border {
-				img.Set(xi, yi, p.foreground)
+				img.Set(xi, yi, fg)
 			}
 			// create x
 			if int(float64(xi)*p.tan) == yi || int(float64(xi)*p.tan)+yi == p.y {
-				img.SetRGBA(xi, yi, p.foreground)
+				img.SetRGBA(xi, yi, fg)
 			}
 		}
 	}
 
-	return img
+	return img, nil
 }
 
-func (h *handler) parseHexColor(s string) color.RGBA {
-	var c color.RGBA
+func (h *handler) parseHexColor(s string) (c color.RGBA, err error) {
 	c.A = 255
 	switch len(s) {
-	case 9:
-		fmt.Sscanf(s, "#%02x%02x%02x%02x", &c.R, &c.G, &c.B, &c.A)
-	case 7:
-		fmt.Sscanf(s, "#%02x%02x%02x", &c.R, &c.G, &c.B)
-	case 5:
-		fmt.Sscanf(s, "#%1x%1x%1x%1x", &c.R, &c.G, &c.B, &c.A)
+	case 8: // ff008833
+		_, err = fmt.Sscanf(s, "%02x%02x%02x%02x", &c.R, &c.G, &c.B, &c.A)
+	case 6: // ffbbaa
+		_, err = fmt.Sscanf(s, "%02x%02x%02x", &c.R, &c.G, &c.B)
+	case 4: // ff05
+		_, err = fmt.Sscanf(s, "%1x%1x%1x%1x", &c.R, &c.G, &c.B, &c.A)
 		c.R *= 17
 		c.G *= 17
 		c.B *= 17
 		c.A *= 17
-
-	case 4:
-		fmt.Sscanf(s, "#%1x%1x%1x", &c.R, &c.G, &c.B)
+	case 3: // 880
+		_, err = fmt.Sscanf(s, "%1x%1x%1x", &c.R, &c.G, &c.B)
 		c.R *= 17
 		c.G *= 17
 		c.B *= 17
+	default:
+		err = fmt.Errorf("color parsing error. check the spelling of the color (fff, 0000, ffffff, 00000000)")
 	}
-	return c
+	return
 }
 
 func (h *handler) parseQuery(q map[string][]string, p string) (val string, err error) {
@@ -119,16 +128,29 @@ func (h *handler) handlePNG() http.HandlerFunc {
 			}
 		}
 
-		// TODO create queries
-		img := h.createImage(imageParams{
-			x:          x,
-			y:          y,
-			tan:        float64(y) / float64(x),
-			border:     border,
-			background: h.parseHexColor("#fff"),
-			foreground: h.parseHexColor("#000"),
-		})
+		bg, err := h.parseQuery(queries, "bg")
+		if err != nil {
+			bg = "fff"
+		}
 
+		fg, err := h.parseQuery(queries, "fg")
+		if err != nil {
+			fg = "000"
+		}
+
+		img, err := h.createImage(imageParams{
+			x:      x,
+			y:      y,
+			bg:     bg,
+			fg:     fg,
+			tan:    float64(y) / float64(x),
+			border: border,
+		})
+		if err != nil {
+			w.WriteHeader(500)
+			w.Write([]byte(err.Error()))
+			return
+		}
 		w.WriteHeader(200)
 		png.Encode(w, img)
 	}
