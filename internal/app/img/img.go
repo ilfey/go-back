@@ -105,14 +105,14 @@ func (h *handler) handlePNG() http.HandlerFunc {
 		x, err := strconv.Atoi(vars["x"])
 		if err != nil || x == 0 || x > 2000 {
 			w.WriteHeader(412)
-			w.Write([]byte("error: width value not parsed. you can specify a value in the range (1-2000)"))
+			w.Write([]byte("error: width value not parsed. you can specify a value in the range [1-2000]"))
 			return
 		}
 
 		y, err := strconv.Atoi(vars["y"])
 		if err != nil || y == 0 || y > 2000 {
 			w.WriteHeader(412)
-			w.Write([]byte("error: height value not parsed. you can specify a value in the range (1-2000)"))
+			w.Write([]byte("error: height value not parsed. you can specify a value in the range [1-2000]"))
 			return
 		}
 
@@ -123,7 +123,7 @@ func (h *handler) handlePNG() http.HandlerFunc {
 			border, err = strconv.Atoi(borderStr)
 			if err != nil || border <= 0 || border > 50 {
 				w.WriteHeader(400)
-				w.Write([]byte("error: border value must be a number in the range (1, 50)"))
+				w.Write([]byte("error: border value must be a number in the range [1-50]"))
 				return
 			}
 		}
