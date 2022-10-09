@@ -45,7 +45,7 @@ func (h *handler) createImage(p imageParams) *image.RGBA {
 				img.Set(xi, yi, p.foreground)
 			}
 			// create x
-			if int(float64(xi)*p.tan) == yi || int(float64(xi)*p.tan)+yi == p.y-1 {
+			if int(float64(xi)*p.tan) == yi || int(float64(xi)*p.tan)+yi == p.y {
 				img.SetRGBA(xi, yi, p.foreground)
 			}
 		}
