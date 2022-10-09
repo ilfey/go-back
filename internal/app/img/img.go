@@ -90,6 +90,7 @@ func (h *handler) parseQuery(q map[string][]string, p string) (val string, err e
 
 func (h *handler) handlePNG() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		queries := r.URL.Query()
 		vars := mux.Vars(r)
 
 		x, err := strconv.Atoi(vars["x"])
@@ -106,12 +107,24 @@ func (h *handler) handlePNG() http.HandlerFunc {
 			return
 		}
 
+		var border int
+		if borderStr, err := h.parseQuery(queries, "border"); err != nil {
+			border = 5
+		} else {
+			border, err = strconv.Atoi(borderStr)
+			if err != nil || border <= 0 || border > 50 {
+				w.WriteHeader(400)
+				w.Write([]byte("error: border value must be a number in the range (1, 50)"))
+				return
+			}
+		}
+
 		// TODO create queries
 		img := h.createImage(imageParams{
 			x:          x,
 			y:          y,
 			tan:        float64(y) / float64(x),
-			border:     5,
+			border:     border,
 			background: h.parseHexColor("#fff"),
 			foreground: h.parseHexColor("#000"),
 		})
