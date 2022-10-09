@@ -78,6 +78,16 @@ func (h *handler) parseHexColor(s string) color.RGBA {
 	return c
 }
 
+func (h *handler) parseQuery(q map[string][]string, p string) (val string, err error) {
+	vals := q[p]
+	if len(vals) == 0 {
+		err = fmt.Errorf("no %s parameter", p)
+		return
+	}
+	val = vals[0]
+	return
+}
+
 func (h *handler) handlePNG() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
