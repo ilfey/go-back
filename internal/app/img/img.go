@@ -83,15 +83,17 @@ func (h *handler) handlePNG() http.HandlerFunc {
 		vars := mux.Vars(r)
 
 		x, err := strconv.Atoi(vars["x"])
-		if err != nil || x == 0 {
-			w.WriteHeader(500)
-			w.Write([]byte("error: width value not parsed"))
+		if err != nil || x == 0 || x > 2000 {
+			w.WriteHeader(412)
+			w.Write([]byte("error: width value not parsed. you can specify a value in the range (1-2000)"))
+			return
 		}
 
 		y, err := strconv.Atoi(vars["y"])
-		if err != nil || y == 0 {
-			w.WriteHeader(500)
-			w.Write([]byte("error: height value not parsed"))
+		if err != nil || y == 0 || y > 2000 {
+			w.WriteHeader(412)
+			w.Write([]byte("error: height value not parsed. you can specify a value in the range (1-2000)"))
+			return
 		}
 
 		// TODO create queries
