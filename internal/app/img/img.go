@@ -47,6 +47,11 @@ func (h *handler) createImage(p imageParams) (*image.RGBA, error) {
 
 	for yi := img.Bounds().Min.Y; yi < img.Bounds().Max.Y; yi++ {
 		for xi := img.Bounds().Min.X; xi < img.Bounds().Max.X; xi++ {
+			dx := int(float64(xi) * p.tan)
+			// cx := p.x / 2
+			empty := true // TODO (cx-cx/5 > dx || cx+cx/5 < dx)
+			hb := p.border / 2
+
 			//set background
 			img.SetRGBA(xi, yi, bg)
 			// create border
@@ -54,9 +59,10 @@ func (h *handler) createImage(p imageParams) (*image.RGBA, error) {
 				img.Set(xi, yi, fg)
 			}
 			// create x
-			if int(float64(xi)*p.tan) == yi || int(float64(xi)*p.tan)+yi == p.y {
+			if sum := dx + yi; dx-hb < yi && dx+hb > yi && empty || sum > p.y-hb && sum < p.y+hb && empty {
 				img.SetRGBA(xi, yi, fg)
 			}
+			// TODO set Text
 		}
 	}
 
