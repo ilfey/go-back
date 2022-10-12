@@ -48,8 +48,8 @@ func (h *handler) createImage(p imageParams) (*image.RGBA, error) {
 	for yi := img.Bounds().Min.Y; yi < img.Bounds().Max.Y; yi++ {
 		for xi := img.Bounds().Min.X; xi < img.Bounds().Max.X; xi++ {
 			dx := int(float64(xi) * p.tan)
-			// cx := p.x / 2
-			empty := true // TODO (cx-cx/5 > dx || cx+cx/5 < dx)
+			cx := p.x / 2
+			empty := (cx-cx/5 > xi || cx+cx/5 < xi)
 			hb := p.border / 2
 
 			//set background
@@ -157,6 +157,7 @@ func (h *handler) handlePNG() http.HandlerFunc {
 			w.Write([]byte(err.Error()))
 			return
 		}
+
 		w.WriteHeader(200)
 		png.Encode(w, img)
 	}
