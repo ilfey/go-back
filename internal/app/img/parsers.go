@@ -65,7 +65,7 @@ func parseImageParams(r *http.Request) (params *imageParams, code int, err error
 
 	// parse border
 	var border int
-	
+
 	if borderStr, _err := parseQuery(queries, "border"); _err != nil {
 		border = 5
 	} else {
@@ -97,6 +97,6 @@ func parseImageParams(r *http.Request) (params *imageParams, code int, err error
 		tan:    float64(y) / float64(x),
 		border: border,
 	}
-	
+
 	return
 }
