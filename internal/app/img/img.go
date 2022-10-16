@@ -5,11 +5,18 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"os"
+	"strings"
 
 	"net/http"
 	"strconv"
 
+	"github.com/flopp/go-findfont"
+	"github.com/golang/freetype/truetype"
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/image/font"
+	"golang.org/x/image/math/fixed"
 
 	"github.com/ilfey/go-back/internal/app/handlers"
 )
@@ -62,9 +69,57 @@ func (h *handler) createImage(p imageParams) (*image.RGBA, error) {
 			if sum := dx + yi; dx-hb < yi && dx+hb > yi && empty || sum > p.y-hb && sum < p.y+hb && empty {
 				img.SetRGBA(xi, yi, fg)
 			}
-			// TODO set Text
 		}
 	}
+
+	// calc font size
+	var fontSize float64
+	if p.x/2 < p.y {
+		fontSize = float64(p.x / 10)
+	} else {
+		fontSize = float64(p.y / 10)
+	}
+
+	// find font
+	fontFile, err := findfont.Find("arial.ttf")
+	if err != nil {
+		for _, path := range findfont.List() {
+			split := strings.Split(path, ".")
+			if strings.ToLower(split[len(split)-1:][0]) == "ttf" {
+				fontFile = path
+				break
+			}
+		}
+	}
+
+	// read font file
+	fontBytes, err := os.ReadFile(fontFile)
+	if err != nil {
+		logrus.Errorf("error while reading file: %s", fontFile)
+	}
+
+	fontLoaded, err := truetype.Parse([]byte(fontBytes))
+	if err != nil {
+		logrus.Error("font not supported")
+		return img, nil
+	}
+	myFont := truetype.NewFace(fontLoaded, &truetype.Options{
+		Size: fontSize,
+	})
+
+	d := &font.Drawer{
+		Dst:  img,
+		Src:  image.NewUniform(fg),
+		Face: myFont,
+	}
+
+	delta := d.MeasureString(fmt.Sprintf("%dx%d", p.x, p.y))
+	d.Dot = fixed.Point26_6{
+		X: fixed.I(p.x/2 - int(delta/fixed.I(2))),
+		Y: fixed.I(p.y/2 + int(fontSize/float64(3))),
+	}
+
+	d.DrawString(fmt.Sprintf("%dx%d", p.x, p.y))
 
 	return img, nil
 }
