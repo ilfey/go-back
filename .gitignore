@@ -5,3 +5,5 @@ server.exe
 
 !cmd/server
 !internal/app/server
+bin/cmd
+build.sh
