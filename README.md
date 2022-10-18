@@ -33,6 +33,14 @@ It's a backend for frontend development or mobile application development. This 
 
 ### Image routes
 
+Query params
+
+When setting fg or bg options you can use alpha channel: `1234` or `12345678`
+
+`bg` - background color
+`fg` - foreground color
+`border` - border and diagonal width
+
 `http://127.0.0.1:8000/img/256x256.png`
 
 ![256x256 image](https://imgur.com/E2jD5rm.png)
