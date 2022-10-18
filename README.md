@@ -4,7 +4,7 @@ It's a backend for frontend development or mobile application development. This 
 
 ## How to use it?
 
-You need to boot the server and create an `.env` file or set variables before starting the server.
+You need to download the server and create an `.env` file or set variables before starting the server.
 
 What should be the file?
 
