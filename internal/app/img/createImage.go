@@ -2,7 +2,9 @@ package img
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/flopp/go-findfont"
 	"github.com/fogleman/gg"
 )
 
@@ -43,6 +45,27 @@ func createImage(p *imageParams) (*gg.Context, error) {
 
 	// draw lines
 	ctx.Stroke()
+
+	font, err := findfont.Find("arial.ttf")
+	if err != nil {
+		for _, path := range findfont.List() {
+			split := strings.Split(path, ".")
+			if strings.ToLower(split[len(split)-1:][0]) == "ttf" {
+				font = path
+				break
+			}
+		}
+	}
+
+	// calc font size
+	var fontSize float64
+	if p.x/2 < p.y {
+		fontSize = float64(p.x / 10)
+	} else {
+		fontSize = float64(p.y / 10)
+	}
+
+	ctx.LoadFontFace(font, fontSize)
 
 	// set text
 	ctx.DrawStringAnchored(fmt.Sprintf("%dx%d", p.x, p.y), W/2, H/2, 0.5, 0.5)
