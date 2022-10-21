@@ -25,7 +25,6 @@ func New() *Server {
 }
 
 func (s *Server) Start(config *Config) error {
-	s.logger.Info("starting server")
 
 	s.config = config
 
@@ -34,6 +33,8 @@ func (s *Server) Start(config *Config) error {
 	}
 
 	s.configureRouter()
+
+	s.logger.Infof("starting server on http://%s/", config.Address)
 
 	return http.ListenAndServe(s.config.Address, s.router)
 }

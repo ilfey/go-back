@@ -65,7 +65,7 @@ func (h *handler) handleJPG() http.HandlerFunc {
 		jpeg.Encode(w, ctx.Image(), &jpeg.Options{
 			Quality: 30,
 		})
-		
+
 	}
 }
 
