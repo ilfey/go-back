@@ -2,7 +2,6 @@ package text
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/XANi/loremipsum"
 	"github.com/gorilla/mux"
@@ -24,9 +23,9 @@ func (h *handler) Register(router *mux.Router) {
 	router.HandleFunc("/text/word", h.handleWord())
 	router.HandleFunc("/text/sentence", h.handleSentence())
 	router.HandleFunc("/text/paragraph", h.handleParagraph())
-	router.HandleFunc("/text/words/{size:[0-9]+}", h.handleWords())
-	router.HandleFunc("/text/sentences/{size:[0-9]+}", h.handleSentences())
-	router.HandleFunc("/text/paragraphs/{size:[0-9]+}", h.handleParagraphs())
+	router.HandleFunc("/text/words/{count:[0-9]+}", h.handleWords())
+	router.HandleFunc("/text/sentences/{count:[0-9]+}", h.handleSentences())
+	router.HandleFunc("/text/paragraphs/{count:[0-9]+}", h.handleParagraphs())
 }
 
 func (h *handler) handleWord() http.HandlerFunc {
@@ -55,30 +54,48 @@ func (h *handler) handleParagraph() http.HandlerFunc {
 
 func (h *handler) handleWords() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		size, _ := strconv.Atoi(mux.Vars(r)["size"])
-		w.WriteHeader(200)
+		count, code, err := parseCount(r)
+		if err != nil {
+			w.WriteHeader(code)
+			w.Write([]byte(err.Error()))
+			return
+		}
 
-		words := h.txtGen.Words(size)
+		words := h.txtGen.Words(count)
+
+		w.WriteHeader(200)
 		w.Write([]byte(words))
 	}
 }
 
 func (h *handler) handleSentences() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		size, _ := strconv.Atoi(mux.Vars(r)["size"])
-		w.WriteHeader(200)
+		count, code, err := parseCount(r)
+		if err != nil {
+			w.WriteHeader(code)
+			w.Write([]byte(err.Error()))
+			return
+		}
 
-		words := h.txtGen.Sentences(size)
-		w.Write([]byte(words))
+		sentences := h.txtGen.Sentences(count)
+
+		w.WriteHeader(200)
+		w.Write([]byte(sentences))
 	}
 }
 
 func (h *handler) handleParagraphs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		size, _ := strconv.Atoi(mux.Vars(r)["size"])
-		w.WriteHeader(200)
+		count, code, err := parseCount(r)
+		if err != nil {
+			w.WriteHeader(code)
+			w.Write([]byte(err.Error()))
+			return
+		}
 
-		word := h.txtGen.Paragraphs(size)
-		w.Write([]byte(word))
+		paragraphs := h.txtGen.Paragraphs(count)
+
+		w.WriteHeader(200)
+		w.Write([]byte(paragraphs))
 	}
 }
