@@ -4,19 +4,30 @@ It's a backend for frontend development or mobile application development. This 
 
 ## How to use it?
 
-You need to download the server and create an `.env` file or set variables before starting the server.
+You need to download the server and create a `.env` file or set flags when starting the server.
 
 What should be the file?
 
 ```env
-ADDRESS=:8000
-LOGLEVEL=debug
+PORT=8000
+ADDRESS=0.0.0.0
+LOGLEVEL=info
 ```
 
 What variables are needed?
 
-* `ADDRESS` - The address that the server will listen on. Default: `0.0.0.0:8000`
-* `LOGLEVEL` - Server logging level. Default: `debug`
+* `PORT` - The port that the server will listen on. Dafault: `8000`
+* `ADDRESS` - The IP address that the server will listen on. Default: `0.0.0.0`
+* `LOGLEVEL` - Server logging level. Default: `info`
+
+What flags to set?
+
+You can also start the server with the -h flag to see what flags exist.
+Flags will take precedence if you use flags and environment file at the same time.
+
+* `-p` - The port that the server will listen on. Dafault: `8000`
+* `-a` - The IP address that the server will listen on. Default: `0.0.0.0`
+* `-ll` - Server logging level. Default: `info`
 
 ## Routes
 
@@ -59,8 +70,8 @@ When setting fg or bg options you can use alpha channel: `1234` or `12345678`
 
 `http://127.0.0.1:8000/img/256x256.png`
 
-![256x256 image](https://imgur.com/E2jD5rm.png)
+![256x256 image](https://imgur.com/j97nzA5.png)
 
-`http://127.0.0.1:8000/img/256x256.png?bg=00FFFF&fg=ff0&border=10`
+`http://127.0.0.1:8000/img/256x256.png?bg=00000000&fg=215&border=10`
 
-![256x256 image](https://imgur.com/BVdtFre.png)
+![256x256 image with transparent bg](https://imgur.com/8qi3U6z.png)
