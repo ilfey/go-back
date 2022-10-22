@@ -2,15 +2,10 @@ package img
 
 import (
 	"fmt"
-	"image"
-	"os"
 	"strings"
 
 	"github.com/flopp/go-findfont"
-	"github.com/golang/freetype/truetype"
-	"github.com/sirupsen/logrus"
-	"golang.org/x/image/font"
-	"golang.org/x/image/math/fixed"
+	"github.com/fogleman/gg"
 )
 
 type imageParams struct {
@@ -19,37 +14,45 @@ type imageParams struct {
 	bg     string
 	fg     string
 	tan    float64
-	border int
+	border float64
 }
 
-func createImage(p *imageParams) (*image.RGBA, error) {
-	bg, err := parseHexColor(p.bg)
+func createImage(p *imageParams) (*gg.Context, error) {
+	W := float64(p.x)
+	H := float64(p.y)
+
+	ctx := gg.NewContext(p.x, p.y)
+
+	// set background
+	ctx.SetHexColor(p.bg)
+	ctx.Clear()
+
+	// set color and line width
+	ctx.SetHexColor(p.fg)
+	ctx.SetLineWidth(p.border)
+
+	// create border
+	ctx.DrawLine(0, 0, W, 0) // top
+	ctx.DrawLine(W, 0, W, H) // right
+	ctx.DrawLine(W, H, 0, H) // bottom
+	ctx.DrawLine(0, H, 0, 0) // left
+
+	// create x
+	ctx.DrawLine(0, 0, W/4, H/4)     // top left
+	ctx.DrawLine(W, 0, W-W/4, H/4)   // top right
+	ctx.DrawLine(W, H, W-W/4, H-H/4) // bottom right
+	ctx.DrawLine(0, H, W/4, H-H/4)   // bottom left
+
+	// draw lines
+	ctx.Stroke()
+
+	font, err := findfont.Find("arial.ttf")
 	if err != nil {
-		return nil, err
-	}
-	fg, err := parseHexColor(p.fg)
-	if err != nil {
-		return nil, err
-	}
-
-	img := image.NewRGBA(image.Rect(0, 0, p.x, p.y))
-
-	for yi := img.Bounds().Min.Y; yi < img.Bounds().Max.Y; yi++ {
-		for xi := img.Bounds().Min.X; xi < img.Bounds().Max.X; xi++ {
-			dx := int(float64(xi) * p.tan)
-			cx := p.x / 2
-			empty := (cx-cx/5 > xi || cx+cx/5 < xi)
-			hb := p.border / 2
-
-			//set background
-			img.SetRGBA(xi, yi, bg)
-			// create border
-			if xi > p.x-p.border || xi < p.border || yi > p.y-p.border || yi < p.border {
-				img.Set(xi, yi, fg)
-			}
-			// create x
-			if sum := dx + yi; dx-hb < yi && dx+hb > yi && empty || sum > p.y-hb && sum < p.y+hb && empty {
-				img.SetRGBA(xi, yi, fg)
+		for _, path := range findfont.List() {
+			split := strings.Split(path, ".")
+			if strings.ToLower(split[len(split)-1:][0]) == "ttf" {
+				font = path
+				break
 			}
 		}
 	}
@@ -62,46 +65,10 @@ func createImage(p *imageParams) (*image.RGBA, error) {
 		fontSize = float64(p.y / 10)
 	}
 
-	// find font
-	fontFile, err := findfont.Find("arial.ttf")
-	if err != nil {
-		for _, path := range findfont.List() {
-			split := strings.Split(path, ".")
-			if strings.ToLower(split[len(split)-1:][0]) == "ttf" {
-				fontFile = path
-				break
-			}
-		}
-	}
+	ctx.LoadFontFace(font, fontSize)
 
-	// read font file
-	fontBytes, err := os.ReadFile(fontFile)
-	if err != nil {
-		logrus.Errorf("error while reading file: %s", fontFile)
-	}
+	// set text
+	ctx.DrawStringAnchored(fmt.Sprintf("%dx%d", p.x, p.y), W/2, H/2, 0.5, 0.5)
 
-	fontLoaded, err := truetype.Parse([]byte(fontBytes))
-	if err != nil {
-		logrus.Error("font not supported")
-		return img, nil
-	}
-	myFont := truetype.NewFace(fontLoaded, &truetype.Options{
-		Size: fontSize,
-	})
-
-	d := &font.Drawer{
-		Dst:  img,
-		Src:  image.NewUniform(fg),
-		Face: myFont,
-	}
-
-	delta := d.MeasureString(fmt.Sprintf("%dx%d", p.x, p.y))
-	d.Dot = fixed.Point26_6{
-		X: fixed.I(p.x/2 - int(delta/fixed.I(2))),
-		Y: fixed.I(p.y/2 + int(fontSize/float64(3))),
-	}
-
-	d.DrawString(fmt.Sprintf("%dx%d", p.x, p.y))
-
-	return img, nil
+	return ctx, nil
 }

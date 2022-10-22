@@ -21,3 +21,24 @@ GET http://127.0.0.1:8000/text/sentences/5
 ### test 3 paragraphs
 GET http://127.0.0.1:8000/text/paragraphs/3
 
+### test 0 words
+GET http://127.0.0.1:8000/text/words/0
+
+
+### test 0 setences
+GET http://127.0.0.1:8000/text/sentences/0
+
+
+### test 101 paragraphs
+GET http://127.0.0.1:8000/text/paragraphs/101
+
+### test 101 words
+GET http://127.0.0.1:8000/text/words/101
+
+
+### test 101 setences
+GET http://127.0.0.1:8000/text/sentences/101
+
+
+### test 101 paragraphs
+GET http://127.0.0.1:8000/text/paragraphs/101
