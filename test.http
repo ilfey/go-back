@@ -54,3 +54,15 @@ GET http://127.0.0.1:8000/json/array/boolean?len=10
 
 ### test 101 array of boolean
 GET http://127.0.0.1:8000/json/array/boolean?len=101
+
+
+### test 0 array of string
+GET http://127.0.0.1:8000/json/array/string?len=0
+
+
+### test 10 array of string
+GET http://127.0.0.1:8000/json/array/string?len=10
+
+
+### test 101 array of string
+GET http://127.0.0.1:8000/json/array/string?len=101
