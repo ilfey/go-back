@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -31,18 +30,11 @@ func (h *handler) handleArrayOfBoolean() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		queries := r.URL.Query()
 
-		var length int
-
-		// parse length
-		if lenStr, err := parseQuery(queries, "len"); err != nil {
-			length = 1
-		} else {
-			length, err = strconv.Atoi(lenStr)
-			if err != nil || length < 1 || length > 100 {
-				w.WriteHeader(400)
-				w.Write([]byte("error: len value must be a number in the range [1-100]"))
-				return
-			}
+		length, code, err := parseLegth(queries)
+		if err != nil {
+			w.WriteHeader(code)
+			w.Write([]byte(err.Error()))
+			return
 		}
 
 		// create and fill array
