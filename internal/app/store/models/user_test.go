@@ -82,3 +82,9 @@ func TestUser_Validate(t *testing.T) {
 		})
 	}
 }
+
+func TestUser_BeforeCreate(t *testing.T) {
+	u := models.TestUser(t)
+	assert.NoError(t, u.BeforeCreate())
+	assert.NotEmpty(t, u.Password)
+}
