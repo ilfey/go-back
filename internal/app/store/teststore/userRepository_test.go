@@ -24,3 +24,15 @@ func TestUserRepository_FindByUsername(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, u2)
 }
+
+func TestUserRepository_FindByEmail(t *testing.T) {
+	s := teststore.New()
+	u1 := models.TestUser(t)
+	_, err := s.User().FindByEmail(context.Background(), u1.Email, u1.Password)
+	assert.EqualError(t, err, teststore.ErrNotFound.Error())
+
+	s.User().Create(context.Background(), u1)
+	u2, err := s.User().FindByEmail(context.Background(), u1.Email, u1.Password)
+	assert.NoError(t, err)
+	assert.NotNil(t, u2)
+}
