@@ -3,6 +3,8 @@ package models
 import (
 	"fmt"
 
+	"github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -27,6 +29,14 @@ func (u *User) BeforeCreate() error {
 	}
 
 	return nil
+}
+
+func (u *User) Validate() error {
+	return validation.ValidateStruct(
+		u,
+		validation.Field(&u.Email, validation.Required, is.Email),
+		validation.Field(&u.Password, validation.NotIn(""), validation.Length(6, 100)),
+	)
 }
 
 func (u *User) ComparePassword(password string) bool {

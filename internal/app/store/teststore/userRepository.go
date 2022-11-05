@@ -16,7 +16,9 @@ var ErrNotFound = fmt.Errorf("user is not found")
 
 func (r *userRepository) Create(ctx context.Context, u *models.User) error {
 
-	// TODO validate
+	if err := u.Validate(); err != nil {
+		return err
+	}
 
 	if err := u.BeforeCreate(); err != nil {
 		return err
@@ -38,7 +40,7 @@ func (r *userRepository) FindByUsername(ctx context.Context, username, password 
 		if u == nil {
 			continue
 		}
-		
+
 		if u.Username == username && u.ComparePassword(password) {
 			return u, nil
 		}
