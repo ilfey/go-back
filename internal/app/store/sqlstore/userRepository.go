@@ -15,6 +15,10 @@ type userRepository struct {
 func (r *userRepository) Create(ctx context.Context, u *models.User) error {
 	q := "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id"
 
+	if err := u.BeforeCreate(); err != nil {
+		return err
+	}
+
 	r.store.logger.Tracef("SQL Query: %s", q)
 
 	if err := r.store.db.QueryRow(ctx, q, u.Username, u.Email, u.Password).Scan(&u.Id); err != nil {
