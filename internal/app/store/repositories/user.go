@@ -9,4 +9,5 @@ import (
 type UserRepository interface {
 	Create(ctx context.Context, u *models.User) error
 	FindByUsername(ctx context.Context, username string, password string) (u *models.User, err error)
+	FindByEmail(ctx context.Context, email string, password string) (u *models.User, err error)
 }

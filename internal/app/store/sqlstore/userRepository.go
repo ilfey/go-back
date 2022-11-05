@@ -50,3 +50,23 @@ func (r *userRepository) FindByUsername(ctx context.Context, username, password 
 
 	return &u, nil
 }
+
+func (r *userRepository) FindByEmail(ctx context.Context, email, password string) (*models.User, error) {
+	q := "SELECT id, username, email, password FROM users WHERE email = $1 AND password = $2"
+
+	r.store.logger.Tracef("SQL Query: %s", q)
+
+	var u models.User
+
+	if err := r.store.db.QueryRow(ctx, q, email, password).Scan(&u.Id, &u.Username, &u.Email, &u.Password); err != nil {
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			newErr := fmt.Errorf("SQL Error: %s, Detail: %s, Where: %s, Code: %s, SQLState: %s", pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
+			r.store.logger.Error(newErr)
+			return nil, newErr
+		}
+
+		return nil, err
+	}
+
+	return &u, nil
+}
