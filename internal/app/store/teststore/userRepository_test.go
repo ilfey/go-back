@@ -15,3 +15,12 @@ func TestUserRepository_Create(t *testing.T) {
 	assert.NoError(t, s.User().Create(context.Background(), u))
 	assert.NotNil(t, u.Id)
 }
+
+func TestUserRepository_FindByUsername(t *testing.T) {
+	s := teststore.New()
+	u1 := models.TestUser(t)
+	s.User().Create(context.Background(), u1)
+	u2, err := s.User().FindByUsername(context.Background(), u1.Username, u1.Password)
+	assert.NoError(t, err)
+	assert.NotNil(t, u2)
+}
