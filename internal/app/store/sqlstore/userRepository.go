@@ -39,7 +39,7 @@ func (r *userRepository) Create(ctx context.Context, u *models.User) error {
 }
 
 func (r *userRepository) FindById(ctx context.Context, id int) (*models.User, error) {
-	
+
 	q := "SELECT id, username, email, password FROM users WHERE id = $1"
 
 	r.store.logger.Tracef("SQL Query: %s", q)
@@ -59,7 +59,7 @@ func (r *userRepository) FindById(ctx context.Context, id int) (*models.User, er
 	return &u, nil
 }
 
-func (r *userRepository) FindByUsername(ctx context.Context, username, password string) (*models.User, error) {
+func (r *userRepository) FindByUsernameWithPassword(ctx context.Context, username, password string) (*models.User, error) {
 
 	q := "SELECT id, username, email, password FROM users WHERE username = $1 AND password = $2"
 
@@ -80,7 +80,7 @@ func (r *userRepository) FindByUsername(ctx context.Context, username, password 
 	return &u, nil
 }
 
-func (r *userRepository) FindByEmail(ctx context.Context, email, password string) (*models.User, error) {
+func (r *userRepository) FindByEmailWithPassword(ctx context.Context, email, password string) (*models.User, error) {
 	q := "SELECT id, username, email, password FROM users WHERE email = $1 AND password = $2"
 
 	r.store.logger.Tracef("SQL Query: %s", q)

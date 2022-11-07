@@ -25,23 +25,23 @@ func TestUserRepository_FindById(t *testing.T) {
 	assert.NotNil(t, u2)
 }
 
-func TestUserRepository_FindByUsername(t *testing.T) {
+func TestUserRepository_FindByUsernameWithPassword(t *testing.T) {
 	s := teststore.New()
 	u1 := models.TestUser(t)
 	s.User().Create(context.Background(), u1)
-	u2, err := s.User().FindByUsername(context.Background(), u1.Username, u1.Password)
+	u2, err := s.User().FindByUsernameWithPassword(context.Background(), u1.Username, u1.Password)
 	assert.NoError(t, err)
 	assert.NotNil(t, u2)
 }
 
-func TestUserRepository_FindByEmail(t *testing.T) {
+func TestUserRepository_FindByEmailWithPassword(t *testing.T) {
 	s := teststore.New()
 	u1 := models.TestUser(t)
-	_, err := s.User().FindByEmail(context.Background(), u1.Email, u1.Password)
+	_, err := s.User().FindByEmailWithPassword(context.Background(), u1.Email, u1.Password)
 	assert.EqualError(t, err, teststore.ErrNotFound.Error())
 
 	s.User().Create(context.Background(), u1)
-	u2, err := s.User().FindByEmail(context.Background(), u1.Email, u1.Password)
+	u2, err := s.User().FindByEmailWithPassword(context.Background(), u1.Email, u1.Password)
 	assert.NoError(t, err)
 	assert.NotNil(t, u2)
 }

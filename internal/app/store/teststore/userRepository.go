@@ -49,7 +49,7 @@ func (r *userRepository) FindById(ctx context.Context, id int) (*models.User, er
 	return nil, ErrNotFound
 }
 
-func (r *userRepository) FindByUsername(ctx context.Context, username, password string) (*models.User, error) {
+func (r *userRepository) FindByUsernameWithPassword(ctx context.Context, username, password string) (*models.User, error) {
 	for _, u := range r.users {
 		if u == nil {
 			continue
@@ -63,7 +63,7 @@ func (r *userRepository) FindByUsername(ctx context.Context, username, password 
 	return nil, ErrNotFound
 }
 
-func (r *userRepository) FindByEmail(ctx context.Context, email, password string) (*models.User, error) {
+func (r *userRepository) FindByEmailWithPassword(ctx context.Context, email, password string) (*models.User, error) {
 	for _, u := range r.users {
 		if u == nil {
 			continue
