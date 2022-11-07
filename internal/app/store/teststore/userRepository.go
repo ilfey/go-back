@@ -35,6 +35,20 @@ func (r *userRepository) Create(ctx context.Context, u *models.User) error {
 	return nil
 }
 
+func (r *userRepository) FindById(ctx context.Context, id int) (*models.User, error) {
+	for _, u := range r.users {
+		if u == nil {
+			continue
+		}
+
+		if u.Id == id {
+			return u, nil
+		}
+	}
+
+	return nil, ErrNotFound
+}
+
 func (r *userRepository) FindByUsername(ctx context.Context, username, password string) (*models.User, error) {
 	for _, u := range r.users {
 		if u == nil {
