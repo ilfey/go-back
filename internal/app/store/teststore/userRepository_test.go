@@ -16,6 +16,15 @@ func TestUserRepository_Create(t *testing.T) {
 	assert.NotNil(t, u.Id)
 }
 
+func TestUserRepository_FindById(t *testing.T) {
+	s := teststore.New()
+	u1 := models.TestUser(t)
+	s.User().Create(context.Background(), u1)
+	u2, err := s.User().FindById(context.Background(), u1.Id)
+	assert.NoError(t, err)
+	assert.NotNil(t, u2)
+}
+
 func TestUserRepository_FindByUsername(t *testing.T) {
 	s := teststore.New()
 	u1 := models.TestUser(t)
