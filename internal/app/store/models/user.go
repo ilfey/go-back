@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"golang.org/x/crypto/bcrypt"
@@ -24,8 +22,6 @@ func (u *User) BeforeCreate() error {
 		}
 
 		u.Password = string(b)
-
-		fmt.Println(string(b))
 	}
 
 	return nil
