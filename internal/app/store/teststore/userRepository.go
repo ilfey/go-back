@@ -41,7 +41,7 @@ func (r *userRepository) FindById(ctx context.Context, id int) (*models.User, er
 			continue
 		}
 
-		if u.Id == id {
+		if u.Id == id && !u.IsDeleted {
 			return u, nil
 		}
 	}
@@ -55,7 +55,7 @@ func (r *userRepository) FindByUsername(ctx context.Context, username string) (*
 			continue
 		}
 
-		if u.Username == username {
+		if u.Username == username && !u.IsDeleted {
 			return u, nil
 		}
 	}
@@ -69,7 +69,7 @@ func (r *userRepository) FindByUsernameWithPassword(ctx context.Context, usernam
 			continue
 		}
 
-		if u.Username == username && u.ComparePassword(password) {
+		if u.Username == username && u.ComparePassword(password) && !u.IsDeleted {
 			return u, nil
 		}
 	}
@@ -83,7 +83,7 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*models
 			continue
 		}
 
-		if u.Email == email {
+		if u.Email == email && !u.IsDeleted {
 			return u, nil
 		}
 	}
@@ -97,7 +97,7 @@ func (r *userRepository) FindByEmailWithPassword(ctx context.Context, email, pas
 			continue
 		}
 
-		if u.Email == email && u.ComparePassword(password) {
+		if u.Email == email && u.ComparePassword(password) && !u.IsDeleted {
 			return u, nil
 		}
 	}

@@ -40,13 +40,13 @@ func (r *userRepository) Create(ctx context.Context, u *models.User) error {
 
 func (r *userRepository) FindById(ctx context.Context, id int) (*models.User, error) {
 
-	q := "SELECT id, username, email, password FROM users WHERE id = $1"
+	q := "SELECT id, username, email, password, is_deleted FROM users WHERE id = $1"
 
 	r.store.logger.Tracef("SQL Query: %s", q)
 
 	var u models.User
 
-	if err := r.store.db.QueryRow(ctx, q, id).Scan(&u.Id, &u.Username, &u.Email, &u.Password); err != nil {
+	if err := r.store.db.QueryRow(ctx, q, id).Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.IsDeleted); err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			newErr := fmt.Errorf("SQL Error: %s, Detail: %s, Where: %s, Code: %s, SQLState: %s", pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
 			r.store.logger.Error(newErr)
@@ -61,13 +61,13 @@ func (r *userRepository) FindById(ctx context.Context, id int) (*models.User, er
 
 func (r *userRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
 
-	q := "SELECT id, username, email, password FROM users WHERE username = $1"
+	q := "SELECT id, username, email, password, is_deleted FROM users WHERE username = $1"
 
 	r.store.logger.Tracef("SQL Query: %s", q)
 
 	var u models.User
 
-	if err := r.store.db.QueryRow(ctx, q, username).Scan(&u.Id, &u.Username, &u.Email, &u.Password); err != nil {
+	if err := r.store.db.QueryRow(ctx, q, username).Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.IsDeleted); err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			newErr := fmt.Errorf("SQL Error: %s, Detail: %s, Where: %s, Code: %s, SQLState: %s", pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
 			r.store.logger.Error(newErr)
@@ -82,13 +82,13 @@ func (r *userRepository) FindByUsername(ctx context.Context, username string) (*
 
 func (r *userRepository) FindByUsernameWithPassword(ctx context.Context, username, password string) (*models.User, error) {
 
-	q := "SELECT id, username, email, password FROM users WHERE username = $1 AND password = $2"
+	q := "SELECT id, username, email, password, is_deleted FROM users WHERE username = $1 AND password = $2"
 
 	r.store.logger.Tracef("SQL Query: %s", q)
 
 	var u models.User
 
-	if err := r.store.db.QueryRow(ctx, q, username, password).Scan(&u.Id, &u.Username, &u.Email, &u.Password); err != nil {
+	if err := r.store.db.QueryRow(ctx, q, username, password).Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.IsDeleted); err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			newErr := fmt.Errorf("SQL Error: %s, Detail: %s, Where: %s, Code: %s, SQLState: %s", pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
 			r.store.logger.Error(newErr)
@@ -102,13 +102,13 @@ func (r *userRepository) FindByUsernameWithPassword(ctx context.Context, usernam
 }
 
 func (r *userRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
-	q := "SELECT id, username, email, password FROM users WHERE email = $1"
+	q := "SELECT id, username, email, password, is_deleted FROM users WHERE email = $1"
 
 	r.store.logger.Tracef("SQL Query: %s", q)
 
 	var u models.User
 
-	if err := r.store.db.QueryRow(ctx, q, email).Scan(&u.Id, &u.Username, &u.Email, &u.Password); err != nil {
+	if err := r.store.db.QueryRow(ctx, q, email).Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.IsDeleted); err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			newErr := fmt.Errorf("SQL Error: %s, Detail: %s, Where: %s, Code: %s, SQLState: %s", pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
 			r.store.logger.Error(newErr)
@@ -122,13 +122,13 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*models
 }
 
 func (r *userRepository) FindByEmailWithPassword(ctx context.Context, email, password string) (*models.User, error) {
-	q := "SELECT id, username, email, password FROM users WHERE email = $1 AND password = $2"
+	q := "SELECT id, username, email, password, is_deleted FROM users WHERE email = $1 AND password = $2"
 
 	r.store.logger.Tracef("SQL Query: %s", q)
 
 	var u models.User
 
-	if err := r.store.db.QueryRow(ctx, q, email, password).Scan(&u.Id, &u.Username, &u.Email, &u.Password); err != nil {
+	if err := r.store.db.QueryRow(ctx, q, email, password).Scan(&u.Id, &u.Username, &u.Email, &u.Password, &u.IsDeleted); err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			newErr := fmt.Errorf("SQL Error: %s, Detail: %s, Where: %s, Code: %s, SQLState: %s", pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
 			r.store.logger.Error(newErr)
