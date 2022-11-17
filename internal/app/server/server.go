@@ -51,8 +51,7 @@ func (s *Server) Start(config *Config) error {
 
 	s.logger.Infof("starting server on http://%s/", config.Address)
 
-	// log
-
+	// log routes
 	if err := s.router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 		t, err := route.GetPathTemplate()
 		if err != nil {
