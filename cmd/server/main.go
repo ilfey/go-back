@@ -19,7 +19,7 @@ var (
 func main() {
 	godotenv.Load()
 
-	flag.StringVar(&databaseUrl, "du", getEnv("DATABASE_URL", "info"), "LogLevel")
+	flag.StringVar(&databaseUrl, "du", getEnv("DATABASE_URL", "PostgreSQL database url"), "LogLevel")
 	flag.StringVar(&logLevel, "ll", getEnv("LOGLEVEL", "info"), "LogLevel")
 	flag.StringVar(&address, "a", getEnv("ADDRESS", "0.0.0.0"), "Address")
 	flag.StringVar(&port, "p", getEnv("PORT", "8000"), "Port")
