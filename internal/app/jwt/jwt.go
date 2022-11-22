@@ -49,11 +49,6 @@ func (h *handler) handleRegister() http.HandlerFunc {
 }
 
 func (h *handler) handleLogin() http.HandlerFunc {
-	type userClaims struct {
-		jwt.StandardClaims
-		Username string `json:"username"`
-	}
-
 	type response struct {
 		Token string `json:"token"`
 	}
@@ -76,7 +71,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 		// compare passwords
 		if userExists.ComparePassword(u.Password) {
 			// create token
-			token := jwt.NewWithClaims(jwt.SigningMethodHS256, &userClaims{
+			token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
 				StandardClaims: jwt.StandardClaims{
 					ExpiresAt: jwt.At(time.Now()),
 					IssuedAt:  jwt.At(time.Now()),
