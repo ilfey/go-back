@@ -118,9 +118,9 @@ func (s *Server) configureRouter() {
 	imgHandler.Register(s.router)
 
 	if s.store != nil {
-		jwtHandler := jwt.New(s.store)
+		jwtHandler := jwt.New(s.store, []byte("SECRET")) // TODO add secret
 		jwtHandler.Register(s.router)
 	} else {
-		s.logger.Infof("the server is not connected to the database. route /jwt/** is not available")
+		s.logger.Infof("the server is not connected to the database. routes /jwt/** is not available")
 	}
 }

@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gorilla/mux"
 	"github.com/ilfey/go-back/internal/app/handlers"
 	"github.com/ilfey/go-back/internal/app/store/sqlstore"
@@ -12,11 +14,13 @@ import (
 
 type handler struct {
 	store *sqlstore.Store
+	key   []byte
 }
 
-func New(store *sqlstore.Store) handlers.Handler {
+func New(store *sqlstore.Store, key []byte) handlers.Handler {
 	return &handler{
 		store: store,
+		key:   key,
 	}
 }
 
@@ -45,6 +49,15 @@ func (h *handler) handleRegister() http.HandlerFunc {
 }
 
 func (h *handler) handleLogin() http.HandlerFunc {
+	type userClaims struct {
+		jwt.StandardClaims
+		Username string `json:"username"`
+	}
+
+	type response struct {
+		Token string `json:"token"`
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		// parse user
 		u, err := parseUserFromBody(r)
@@ -52,18 +65,38 @@ func (h *handler) handleLogin() http.HandlerFunc {
 			http.Error(w, "bad request", http.StatusBadRequest)
 			return
 		}
+
 		// get user
 		userExists, err := h.store.User().FindByUsername(context.Background(), u.Username)
 		if err != nil {
 			http.Error(w, "user is not exists", http.StatusUnauthorized)
 			return
 		}
+
 		// compare passwords
-		if !userExists.ComparePassword(u.Password) {
+		if userExists.ComparePassword(u.Password) {
+			// create token
+			token := jwt.NewWithClaims(jwt.SigningMethodHS256, &userClaims{
+				StandardClaims: jwt.StandardClaims{
+					ExpiresAt: jwt.At(time.Now()),
+					IssuedAt:  jwt.At(time.Now()),
+				},
+				Username: u.Username,
+			})
+
+			accessToken, err := token.SignedString(h.key)
+			if err != nil {
+				http.Error(w, "failed to create token", http.StatusInternalServerError)
+				return
+			}
+
 			// convert to json
-			j, err := json.Marshal(userExists)
+			j, err := json.Marshal(&response{
+				Token: accessToken,
+			})
 			if err != nil {
 				http.Error(w, "internal server error", http.StatusInternalServerError)
+				return
 			}
 
 			w.WriteHeader(200)

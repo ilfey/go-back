@@ -31,6 +31,7 @@ require (
 
 require (
 	github.com/XANi/loremipsum v1.1.0
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/flopp/go-findfont v0.1.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
