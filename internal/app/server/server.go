@@ -159,4 +159,12 @@ func (s *Server) configureRouter() {
 	} else {
 		s.logger.Infof("the server is not connected to the database. routes /jwt/** is not available")
 	}
+
+	prouter := s.router.PathPrefix("/private/").Subrouter()
+	prouter.Use(s.bearerMiddleware)
+
+	privateTextHandler := text.New()
+	privateTextHandler.Register(prouter)
+	privateImgHandler := img.New()
+	privateImgHandler.Register(s.router)
 }
