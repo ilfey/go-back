@@ -14,6 +14,7 @@ var (
 	address     string
 	port        string
 	databaseUrl string
+	key         string
 )
 
 func main() {
@@ -23,6 +24,7 @@ func main() {
 	flag.StringVar(&logLevel, "ll", getEnv("LOGLEVEL", "info"), "LogLevel")
 	flag.StringVar(&address, "a", getEnv("ADDRESS", "0.0.0.0"), "Address")
 	flag.StringVar(&port, "p", getEnv("PORT", "8000"), "Port")
+	flag.StringVar(&key, "k", getEnv("JWT_KEY", "secret"), "JWT key")
 
 	flag.Parse()
 
@@ -30,6 +32,7 @@ func main() {
 		Address:     address + ":" + port,
 		LogLevel:    logLevel,
 		DatabaseUrl: databaseUrl,
+		Key:         []byte(key),
 	}
 
 	s := server.New()
