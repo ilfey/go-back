@@ -5,4 +5,5 @@ type Config struct {
 	LogLevel    string
 	DatabaseUrl string
 	Key         []byte
+	LifeSpan    int
 }

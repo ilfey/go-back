@@ -13,14 +13,16 @@ import (
 )
 
 type handler struct {
-	store *sqlstore.Store
-	key   []byte
+	store    *sqlstore.Store
+	key      []byte
+	lifeSpan time.Duration
 }
 
-func New(store *sqlstore.Store, key []byte) handlers.Handler {
+func New(store *sqlstore.Store, key []byte, lifeSpan int) handlers.Handler {
 	return &handler{
-		store: store,
-		key:   key,
+		store:    store,
+		key:      key,
+		lifeSpan: time.Duration(lifeSpan),
 	}
 }
 
@@ -73,7 +75,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 			// create token
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
 				StandardClaims: jwt.StandardClaims{
-					ExpiresAt: jwt.At(time.Now().Add(time.Hour * 24)), // TODO add life cicle
+					ExpiresAt: jwt.At(time.Now().Add(time.Hour * h.lifeSpan)),
 					IssuedAt:  jwt.At(time.Now()),
 				},
 				Username: u.Username,

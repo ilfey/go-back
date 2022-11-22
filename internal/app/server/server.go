@@ -154,7 +154,7 @@ func (s *Server) configureRouter() {
 	imgHandler.Register(s.router)
 
 	if s.store != nil {
-		jwtHandler := jwt.New(s.store, s.config.Key)
+		jwtHandler := jwt.New(s.store, s.config.Key, s.config.LifeSpan)
 		jwtHandler.Register(s.router)
 	} else {
 		s.logger.Infof("the server is not connected to the database. routes /jwt/** is not available")
