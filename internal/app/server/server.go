@@ -3,12 +3,14 @@ package server
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/ilfey/go-back/internal/app/img"
 	"github.com/ilfey/go-back/internal/app/jwt"
+	"github.com/ilfey/go-back/internal/app/parser"
 	"github.com/ilfey/go-back/internal/app/store/sqlstore"
 	"github.com/ilfey/go-back/internal/app/text"
 	"github.com/jackc/pgx/v5"
@@ -105,6 +107,40 @@ func (s *Server) loggingMiddleWare(next http.Handler) http.Handler {
 			http.StatusText(rw.code),
 			time.Since(start),
 		)
+	})
+}
+
+func (s *Server) bearerMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		headerParts := strings.Split(authHeader, " ")
+		if len(headerParts) != 2 {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		if headerParts[0] != "Bearer" {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		_, err := parser.ParseToken(headerParts[1], s.config.Key)
+		if err != nil {
+			if err == parser.ErrInvalidAccessToken {
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }
 
