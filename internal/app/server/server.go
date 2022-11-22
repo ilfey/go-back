@@ -166,5 +166,5 @@ func (s *Server) configureRouter() {
 	privateTextHandler := text.New()
 	privateTextHandler.Register(prouter)
 	privateImgHandler := img.New()
-	privateImgHandler.Register(s.router)
+	privateImgHandler.Register(prouter)
 }
