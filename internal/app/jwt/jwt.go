@@ -73,7 +73,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 			// create token
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
 				StandardClaims: jwt.StandardClaims{
-					ExpiresAt: jwt.At(time.Now()),
+					ExpiresAt: jwt.At(time.Now().Add(time.Hour * 24)), // TODO add life cicle
 					IssuedAt:  jwt.At(time.Now()),
 				},
 				Username: u.Username,
