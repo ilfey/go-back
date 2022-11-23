@@ -101,5 +101,32 @@ When setting fg or bg options you can use alpha channel: `1234` or `12345678`
 
 `http://127.0.0.1:8000/jwt/register`
 
+Request:
+
+![register request](https://imgur.com/0KvxE6g.png)
+
+Response:
+
+![register response](https://imgur.com/Nh4EQGU.png)
+
 `http://127.0.0.1:8000/jwt/login`
 
+Request:
+
+![login request](https://imgur.com/Kuu2A8b.png)
+
+Response:
+
+![login response](https://imgur.com/PAlkIO1.png)
+
+### Private requests
+
+`http://127.0.0.1:8000/private/text/word`
+
+Request:
+
+![private request](https://imgur.com/9qfs4w0.png)
+
+Response:
+
+![private response](https://imgur.com/SBLJaoW.png)
