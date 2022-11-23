@@ -42,3 +42,29 @@ GET http://127.0.0.1:8000/text/sentences/101
 
 ### test 101 paragraphs
 GET http://127.0.0.1:8000/text/paragraphs/101
+
+
+### register
+POST http://127.0.0.1:8000/jwt/register
+Content-Type: application/json
+
+{
+    "username": "ilfey",
+    "email": "ilfey.global@example.com",
+    "password": "QWEasd123"
+}
+
+
+### login
+POST http://127.0.0.1:8000/jwt/login
+Content-Type: application/json
+
+{
+    "username": "ilfey",
+    "password": "QWEasd123"
+}
+
+
+### private word
+POST http://127.0.0.1:8000/private/text/word
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjkyOTgyNDYuNTk5NjIxLCJpYXQiOjE2NjkyMTE4NDYuNTk5NjIxLCJ1c2VybmFtZSI6ImlsZmV5In0.J-fqy78OtdFqH-xQ1I4a0ST8CZ00qjpGAvr457dR8MQ

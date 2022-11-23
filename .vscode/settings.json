@@ -1,4 +1,17 @@
 {
     "makefile.extensionOutputFolder": "./.vscode",
-    "discord.enabled": true
+    "discord.enabled": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "database": "go-back",
+            "name": "go-back",
+            "group": "go-back",
+            "username": "ilfey",
+            "password": "QWEasd123"
+        }
+    ]
 }

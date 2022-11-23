@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "fmt",
+            "command": "go fmt ./...",
+            "type": "shell",
+            "presentation": {
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "close": true
+            }
+        },
+        {
+            "label": "vet",
+            "command": "go vet ./...",
+            "type": "shell",
+            "presentation": {
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "close": true
+            }
+        },
+        {
+            "label": "Clean_Code",
+            "dependsOn": [
+                "fmt",
+                "vet"
+            ]
+        }
+    ]
+}
