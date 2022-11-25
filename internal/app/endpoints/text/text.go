@@ -6,7 +6,7 @@ import (
 	"github.com/XANi/loremipsum"
 	"github.com/gorilla/mux"
 
-	"github.com/ilfey/go-back/internal/app/handlers"
+	"github.com/ilfey/go-back/internal/app/endpoints/handlers"
 )
 
 type handler struct {

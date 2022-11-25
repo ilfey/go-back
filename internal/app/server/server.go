@@ -8,11 +8,12 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/ilfey/go-back/internal/app/img"
-	"github.com/ilfey/go-back/internal/app/jwt"
-	"github.com/ilfey/go-back/internal/app/parser"
+	"github.com/ilfey/go-back/internal/app/endpoints/img"
+	"github.com/ilfey/go-back/internal/app/endpoints/jwt"
+	"github.com/ilfey/go-back/internal/app/endpoints/util"
 	"github.com/ilfey/go-back/internal/app/store/sqlstore"
-	"github.com/ilfey/go-back/internal/app/text"
+	"github.com/ilfey/go-back/internal/app/endpoints/text"
+	"github.com/ilfey/go-back/internal/app/config"
 	"github.com/jackc/pgx/v5"
 	"github.com/sirupsen/logrus"
 )
@@ -20,7 +21,7 @@ import (
 type Server struct {
 	db     *pgx.Conn
 	store  *sqlstore.Store
-	config *Config
+	config *config.Config
 	logger *logrus.Logger
 	router *mux.Router
 }
@@ -32,7 +33,7 @@ func New() *Server {
 	}
 }
 
-func (s *Server) Start(config *Config) error {
+func (s *Server) Start(config *config.Config) error {
 
 	s.config = config
 
@@ -129,9 +130,9 @@ func (s *Server) bearerMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		_, err := parser.ParseToken(headerParts[1], s.config.Key)
+		_, err := util.ParseToken(headerParts[1], s.config.Key)
 		if err != nil {
-			if err == parser.ErrInvalidAccessToken {
+			if err == util.ErrInvalidAccessToken {
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
