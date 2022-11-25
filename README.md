@@ -40,30 +40,27 @@ Flags will take precedence if you use flags and environment file at the same tim
 
 ## Routes
 
-|               **Route**              |         **Description**         |
-|:------------------------------------:|:-------------------------------:|
-| `/text/word`                         | Returns a random word           |
-| `/text/sentence`                     | Returns a random sentence       |
-| `/text/paragraph`                    | Returns a random paragraph      |
-| `/text/words/{count}`                | Returns count random words      |
-| `/text/paragraphs/{count}`           | Returns count random paragraphs |
-| `/text/sentences/{count}`            | Returns count random sentences  |
-| `/img/{width}x{height}.png`          | Returns a png image             |
-| `/img/{width}x{height}.jpg`          | Returns a jpg image             |
-| `/img/{width}x{height}.jpeg`         | Returns a jpeg image            |
-| `/img/{width}x{height}.gif`          | Returns a gif image             |
-| `/jwt/register`                      | Creates a new user in database  |
-| `/jwt/login`                         | Authorizes the user             |
-| `/private/text/word`                 | Returns a random word           |
-| `/private/text/sentence`             | Returns a random sentence       |
-| `/private/text/paragraph`            | Returns a random paragraph      |
-| `/private/text/words/{count}`        | Returns count random words      |
-| `/private/text/paragraphs/{count}`   | Returns count random paragraphs |
-| `/private/text/sentences/{count}`    | Returns count random sentences  |
-| `/private/img/{width}x{height}.png`  | Returns a png image             |
-| `/private/img/{width}x{height}.jpg`  | Returns a jpg image             |
-| `/private/img/{width}x{height}.jpeg` | Returns a jpeg image            |
-| `/private/img/{width}x{height}.gif`  | Returns a gif image             |
+|               **Route**                  |             **Description**             |
+|:----------------------------------------:|:---------------------------------------:|
+| `/text/word?amount={count}`              | Returns the amount of random words      |
+| `/text/paragraph?amount={count}`         | Returns the amount of random paragraphs |
+| `/text/sentence?amount={count}`          | Returns the amount of random sentences  |
+| `/img/{width}x{height}.png`              | Returns a png image                     |
+| `/img/{width}x{height}.jpg`              | Returns a jpg image                     |
+| `/img/{width}x{height}.jpeg`             | Returns a jpeg image                    |
+| `/img/{width}x{height}.gif`              | Returns a gif image                     |
+| `/jwt/register`                          | Creates a new user in database          |
+| `/jwt/login`                             | Authorizes the user                     |
+| `/private/text/word`                     | Returns a random word                   |
+| `/private/text/sentence`                 | Returns a random sentence               |
+| `/private/text/paragraph`                | Returns a random paragraph              |
+| `/private/text/word?amount={count}`      | Returns the amount of random words      |
+| `/private/text/paragraph?amount={count}` | Returns the amount of random paragraphs |
+| `/private/text/sentence?amount={count}`  | Returns the amount of random sentences  |
+| `/private/img/{width}x{height}.png`      | Returns a png image                     |
+| `/private/img/{width}x{height}.jpg`      | Returns a jpg image                     |
+| `/private/img/{width}x{height}.jpeg`     | Returns a jpeg image                    |
+| `/private/img/{width}x{height}.gif`      | Returns a gif image                     |
 
 ### Text routes
 

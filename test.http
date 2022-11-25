@@ -1,3 +1,14 @@
+### test -1 words
+GET http://127.0.0.1:8000/text/word?amount=-1
+
+
+### test -1 setences
+GET http://127.0.0.1:8000/text/sentence?amount=-1
+
+
+### test -1 paragraphs
+GET http://127.0.0.1:8000/text/paragraph?amount=-1
+
 ### test word
 GET http://127.0.0.1:8000/text/word
 
@@ -11,37 +22,38 @@ GET http://127.0.0.1:8000/text/paragraph
 
 
 ### test 10 words
-GET http://127.0.0.1:8000/text/words/10
+GET http://127.0.0.1:8000/text/word?amount=10
 
 
 ### test 5 setences
-GET http://127.0.0.1:8000/text/sentences/5
+GET http://127.0.0.1:8000/text/sentence?amount=5
 
 
 ### test 3 paragraphs
-GET http://127.0.0.1:8000/text/paragraphs/3
+GET http://127.0.0.1:8000/text/paragraph?amount=3
 
 ### test 0 words
-GET http://127.0.0.1:8000/text/words/0
+GET http://127.0.0.1:8000/text/word?amount=0
 
 
 ### test 0 setences
-GET http://127.0.0.1:8000/text/sentences/0
+GET http://127.0.0.1:8000/text/sentence?amount=0
 
 
-### test 101 paragraphs
-GET http://127.0.0.1:8000/text/paragraphs/101
+### test 0 paragraphs
+GET http://127.0.0.1:8000/text/paragraph?amount=0
+
 
 ### test 101 words
-GET http://127.0.0.1:8000/text/words/101
+GET http://127.0.0.1:8000/text/word?amount=101
 
 
 ### test 101 setences
-GET http://127.0.0.1:8000/text/sentences/101
+GET http://127.0.0.1:8000/text/sentence?amount=101
 
 
 ### test 101 paragraphs
-GET http://127.0.0.1:8000/text/paragraphs/101
+GET http://127.0.0.1:8000/text/paragraph?amount=101
 
 
 ### register
