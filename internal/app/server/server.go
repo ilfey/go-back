@@ -3,17 +3,14 @@ package server
 import (
 	"context"
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/ilfey/go-back/internal/app/config"
 	"github.com/ilfey/go-back/internal/app/endpoints/img"
 	"github.com/ilfey/go-back/internal/app/endpoints/jwt"
-	"github.com/ilfey/go-back/internal/app/endpoints/util"
-	"github.com/ilfey/go-back/internal/app/store/sqlstore"
 	"github.com/ilfey/go-back/internal/app/endpoints/text"
-	"github.com/ilfey/go-back/internal/app/config"
+	"github.com/ilfey/go-back/internal/app/store/sqlstore"
 	"github.com/jackc/pgx/v5"
 	"github.com/sirupsen/logrus"
 )
@@ -79,70 +76,6 @@ func (s *Server) configureLogger() error {
 	s.logger.SetLevel(level)
 
 	return nil
-}
-
-func (s *Server) loggingMiddleWare(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logger := s.logger.WithFields(logrus.Fields{
-			"remote_addr": r.RemoteAddr,
-		})
-		logger.Infof("started %s %s", r.Method, r.RequestURI)
-
-		start := time.Now()
-		rw := &responseWriter{w, http.StatusOK}
-		next.ServeHTTP(rw, r)
-
-		var level logrus.Level
-		switch {
-		case rw.code >= 500:
-			level = logrus.ErrorLevel
-		case rw.code >= 400:
-			level = logrus.WarnLevel
-		default:
-			level = logrus.InfoLevel
-		}
-		logger.Logf(
-			level,
-			"completed with %d %s in %v",
-			rw.code,
-			http.StatusText(rw.code),
-			time.Since(start),
-		)
-	})
-}
-
-func (s *Server) bearerMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		headerParts := strings.Split(authHeader, " ")
-		if len(headerParts) != 2 {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		if headerParts[0] != "Bearer" {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		_, err := util.ParseToken(headerParts[1], s.config.Key)
-		if err != nil {
-			if err == util.ErrInvalidAccessToken {
-				http.Error(w, "unauthorized", http.StatusUnauthorized)
-				return
-			}
-
-			http.Error(w, "bad request", http.StatusBadRequest)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
 }
 
 func (s *Server) configureRouter() {
