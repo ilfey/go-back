@@ -8,7 +8,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gorilla/mux"
-	"github.com/ilfey/go-back/internal/app/handlers"
+	"github.com/ilfey/go-back/internal/app/endpoints/handlers"
 	"github.com/ilfey/go-back/internal/app/store/sqlstore"
 )
 

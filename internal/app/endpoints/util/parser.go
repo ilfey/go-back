@@ -1,11 +1,11 @@
-package parser
+package util
 
 import (
 	"errors"
 	"fmt"
 
 	"github.com/dgrijalva/jwt-go/v4"
-	handler "github.com/ilfey/go-back/internal/app/jwt"
+	handler "github.com/ilfey/go-back/internal/app/endpoints/jwt"
 )
 
 var ErrInvalidAccessToken = errors.New("invalid access token")

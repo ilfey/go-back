@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/ilfey/go-back/internal/app/config"
 	"github.com/ilfey/go-back/internal/app/server"
 	"github.com/joho/godotenv"
 )
@@ -31,7 +32,7 @@ func main() {
 
 	flag.Parse()
 
-	config := &server.Config{
+	config := &config.Config{
 		Address:     address + ":" + port,
 		LogLevel:    logLevel,
 		DatabaseUrl: databaseUrl,
