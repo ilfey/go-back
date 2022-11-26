@@ -82,8 +82,12 @@ func (s *Server) configureRouter() {
 	s.router.Use(s.loggingMiddleWare)
 	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
+	jsonRouter := s.router.PathPrefix("/").Subrouter()
+	jsonRouter.Use(s.contentJsonMiddleware)
+
 	textHandler := text.New()
-	textHandler.Register(s.router)
+	textHandler.Register(jsonRouter)
+
 	imgHandler := img.New()
 	imgHandler.Register(s.router)
 
@@ -94,11 +98,15 @@ func (s *Server) configureRouter() {
 		s.logger.Infof("the server is not connected to the database. routes /jwt/** is not available")
 	}
 
-	prouter := s.router.PathPrefix("/private/").Subrouter()
-	prouter.Use(s.bearerMiddleware)
+	privateRouter := s.router.PathPrefix("/private/").Subrouter()
+	privateRouter.Use(s.bearerMiddleware)
+
+	privateJsonRouter := privateRouter.PathPrefix("/").Subrouter()
+	privateJsonRouter.Use(s.contentJsonMiddleware)
 
 	privateTextHandler := text.New()
-	privateTextHandler.Register(prouter)
+	privateTextHandler.Register(privateJsonRouter)
+	
 	privateImgHandler := img.New()
-	privateImgHandler.Register(prouter)
+	privateImgHandler.Register(privateRouter)
 }
