@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ilfey/go-back/internal/app/endpoints/handlers"
-	"github.com/ilfey/go-back/internal/app/endpoints/util"
+	"github.com/ilfey/go-back/internal/pkg/resp"
 	"github.com/sirupsen/logrus"
 )
 
@@ -42,16 +42,16 @@ func (h *handler) handleImage() http.HandlerFunc {
 		// parse imageParams
 		params, code, err := parseImageParams(r)
 		if err != nil {
-			resp := util.NewErrorResponse(code, err.Error())
-			resp.Write(w)
+			res := resp.NewErrorResponse(code, err.Error())
+			res.Write(w)
 			return
 		}
 
 		// create image
 		ctx, err := createImage(params, h.fontPath)
 		if err != nil {
-			resp := util.NewErrorResponse(http.StatusInternalServerError, err.Error())
-			resp.Write(w)
+			res := resp.NewErrorResponse(http.StatusInternalServerError, err.Error())
+			res.Write(w)
 			return
 		}
 
