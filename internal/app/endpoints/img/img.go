@@ -7,87 +7,73 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ilfey/go-back/internal/app/endpoints/handlers"
+	"github.com/ilfey/go-back/internal/app/endpoints/util"
+	"github.com/sirupsen/logrus"
 )
 
-type handler struct{}
+type handler struct {
+	logger   *logrus.Entry
+	fontPath string
+}
 
-func New() handlers.Handler {
-	return &handler{}
+func New(logger *logrus.Logger) handlers.Handler {
+
+	log := logger.WithFields(logrus.Fields{
+		"endpoint": "img",
+	})
+
+	fp := loadFont("arial.ttf")
+	if len(fp) == 0 {
+		log.Warn("No font")
+	}
+
+	return &handler{
+		logger:   log,
+		fontPath: fp,
+	}
 }
 
 func (h *handler) Register(router *mux.Router) {
-	router.HandleFunc("/img/{x:[0-9]+}x{y:[0-9]+}.png", h.handlePNG())
-	router.HandleFunc("/img/{x:[0-9]+}x{y:[0-9]+}.jpeg", h.handleJPG())
-	router.HandleFunc("/img/{x:[0-9]+}x{y:[0-9]+}.jpg", h.handleJPG())
-	router.HandleFunc("/img/{x:[0-9]+}x{y:[0-9]+}.gif", h.handleGIF())
+	router.HandleFunc("/img/{x:[0-9]+}x{y:[0-9]+}.{type:png|jpg|gif}", h.handleImage()) // queries: border=[1-50], bg=[color], fg=[color]
 }
 
-func (h *handler) handlePNG() http.HandlerFunc {
+func (h *handler) handleImage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// parse imageParams
 		params, code, err := parseImageParams(r)
 		if err != nil {
-			w.WriteHeader(code)
-			w.Write([]byte(err.Error()))
+			resp := util.NewErrorResponse(code, err.Error())
+			resp.Write(w)
 			return
 		}
-		// create image
-		ctx, err := createImage(params)
-		if err != nil {
-			w.WriteHeader(500)
-			w.Write([]byte(err.Error()))
-			return
-		}
-		// send image
-		w.WriteHeader(200)
-		ctx.EncodePNG(w)
-	}
-}
 
-func (h *handler) handleJPG() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// parse imageParams
-		params, code, err := parseImageParams(r)
-		if err != nil {
-			w.WriteHeader(code)
-			w.Write([]byte(err.Error()))
-			return
-		}
 		// create image
-		ctx, err := createImage(params)
+		ctx, err := createImage(params, h.fontPath)
 		if err != nil {
-			w.WriteHeader(500)
-			w.Write([]byte(err.Error()))
+			resp := util.NewErrorResponse(http.StatusInternalServerError, err.Error())
+			resp.Write(w)
 			return
 		}
-		// send image
-		w.WriteHeader(200)
-		jpeg.Encode(w, ctx.Image(), &jpeg.Options{
-			Quality: 30,
-		})
-	}
-}
 
-func (h *handler) handleGIF() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// parse imageParams
-		params, code, err := parseImageParams(r)
-		if err != nil {
-			w.WriteHeader(code)
-			w.Write([]byte(err.Error()))
-			return
+		switch params.imageType {
+		case "png":
+			// send png
+			w.WriteHeader(http.StatusOK)
+			ctx.EncodePNG(w)
+
+		case "jpeg":
+			// send jpg
+			w.WriteHeader(http.StatusOK)
+			jpeg.Encode(w, ctx.Image(), &jpeg.Options{
+				Quality: 30,
+			})
+
+		case "gif":
+			// send gif
+			w.WriteHeader(http.StatusOK)
+			gif.Encode(w, ctx.Image(), &gif.Options{
+				NumColors: 256,
+			})
 		}
-		// create image
-		ctx, err := createImage(params)
-		if err != nil {
-			w.WriteHeader(500)
-			w.Write([]byte(err.Error()))
-			return
-		}
-		// send image
-		w.WriteHeader(200)
-		gif.Encode(w, ctx.Image(), &gif.Options{
-			NumColors: 256,
-		})
 	}
 }

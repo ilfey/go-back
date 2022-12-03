@@ -88,7 +88,7 @@ func (s *Server) configureRouter() {
 	textHandler := text.New()
 	textHandler.Register(jsonRouter)
 
-	imgHandler := img.New()
+	imgHandler := img.New(s.logger)
 	imgHandler.Register(s.router)
 
 	if s.store != nil {
@@ -106,7 +106,7 @@ func (s *Server) configureRouter() {
 
 	privateTextHandler := text.New()
 	privateTextHandler.Register(privateJsonRouter)
-	
-	privateImgHandler := img.New()
+
+	privateImgHandler := img.New(s.logger)
 	privateImgHandler.Register(privateRouter)
 }
