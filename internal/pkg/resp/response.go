@@ -1,4 +1,4 @@
-package util
+package resp
 
 import (
 	"encoding/json"
