@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ilfey/go-back/internal/app/endpoints/util"
+	"github.com/ilfey/go-back/internal/app/endpoints/jwt"
 	"github.com/sirupsen/logrus"
 )
 
@@ -68,9 +68,9 @@ func (s *Server) bearerMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		_, err := util.ParseToken(headerParts[1], s.config.Key)
+		_, err := jwt.ParseToken(headerParts[1], s.config.Key)
 		if err != nil {
-			if err == util.ErrInvalidAccessToken {
+			if err == jwt.ErrInvalidAccessToken {
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}

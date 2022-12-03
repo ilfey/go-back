@@ -9,7 +9,9 @@ import (
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gorilla/mux"
 	"github.com/ilfey/go-back/internal/app/endpoints/handlers"
+	"github.com/ilfey/go-back/internal/app/store/models"
 	"github.com/ilfey/go-back/internal/app/store/sqlstore"
+	"github.com/ilfey/go-back/internal/pkg/resp"
 )
 
 type handler struct {
@@ -34,19 +36,22 @@ func (h *handler) Register(router *mux.Router) {
 func (h *handler) handleRegister() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// parse user
-		u, err := parseUserFromBody(r)
-		if err != nil {
-			http.Error(w, "bad request", http.StatusBadRequest)
+		var user *models.User
+		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+			res := resp.NewErrorResponse(http.StatusBadRequest, "bad request")
+			res.Write(w)
 			return
 		}
+		
 		// create user
-		if err := h.store.User().Create(context.TODO(), u); err != nil {
-			http.Error(w, "bad request", http.StatusBadRequest)
+		if err := h.store.User().Create(context.TODO(), user); err != nil {
+			res := resp.NewErrorResponse(http.StatusBadRequest, "user not created")
+			res.Write(w)
 			return
 		}
 
-		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte("success"))
+		res := resp.NewErrorResponse(http.StatusCreated, "user created")
+		res.Write(w)
 	}
 }
 
@@ -57,33 +62,37 @@ func (h *handler) handleLogin() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		// parse user
-		u, err := parseUserFromBody(r)
-		if err != nil {
-			http.Error(w, "bad request", http.StatusBadRequest)
+		var user *models.User
+		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+			res := resp.NewErrorResponse(http.StatusBadRequest, "bad request")
+			res.Write(w)
 			return
 		}
 
-		// get user
-		userExists, err := h.store.User().FindByUsername(context.Background(), u.Username)
+		// get user by username
+		userExists, err := h.store.User().FindByUsername(context.Background(), user.Username)
 		if err != nil {
-			http.Error(w, "user is not exists", http.StatusUnauthorized)
+			res := resp.NewErrorResponse(http.StatusUnauthorized, "user is not exists")
+			res.Write(w)
 			return
 		}
 
 		// compare passwords
-		if userExists.ComparePassword(u.Password) {
+		if userExists.ComparePassword(user.Password) {
 			// create token
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
 				StandardClaims: jwt.StandardClaims{
 					ExpiresAt: jwt.At(time.Now().Add(time.Hour * h.lifeSpan)),
 					IssuedAt:  jwt.At(time.Now()),
 				},
-				Username: u.Username,
+				Username: user.Username,
 			})
 
+			// generate access token
 			accessToken, err := token.SignedString(h.key)
 			if err != nil {
-				http.Error(w, "failed to create token", http.StatusInternalServerError)
+				res := resp.NewErrorResponse(http.StatusInternalServerError, "failed to create token")
+				res.Write(w)
 				return
 			}
 
@@ -92,7 +101,8 @@ func (h *handler) handleLogin() http.HandlerFunc {
 				Token: accessToken,
 			})
 			if err != nil {
-				http.Error(w, "internal server error", http.StatusInternalServerError)
+				res := resp.NewErrorResponse(http.StatusInternalServerError, "error creating response")
+				res.Write(w)
 				return
 			}
 
@@ -101,6 +111,8 @@ func (h *handler) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		http.Error(w, "password is not valid", http.StatusUnauthorized)
+		// password is not valid
+		res := resp.NewErrorResponse(http.StatusUnauthorized, "password is not valid")
+		res.Write(w)
 	}
 }
