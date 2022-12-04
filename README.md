@@ -84,7 +84,7 @@ When setting fg or bg options you can use alpha channel: `1234` or `12345678`
 
 `http://127.0.0.1:8000/img/256x256.png?bg=121D32&fg=BF3284`
 
-![256x256 image](https://imgur.com/FYD17iQ.png)
+![256x256 image](https://imgur.com/xFDdOyE.png)
 
 ### JWT endpoints
 
