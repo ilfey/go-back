@@ -9,6 +9,7 @@ import (
 	"github.com/ilfey/go-back/internal/app/config"
 	"github.com/ilfey/go-back/internal/app/endpoints/img"
 	"github.com/ilfey/go-back/internal/app/endpoints/jwt"
+	"github.com/ilfey/go-back/internal/app/endpoints/ping"
 	"github.com/ilfey/go-back/internal/app/endpoints/text"
 	"github.com/ilfey/go-back/internal/app/store/sqlstore"
 	"github.com/jackc/pgx/v5"
@@ -80,33 +81,31 @@ func (s *Server) configureLogger() error {
 
 func (s *Server) configureRouter() {
 	s.router.Use(s.loggingMiddleWare)
+	s.router.Use(s.contentJsonMiddleware)
 	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
-	jsonRouter := s.router.PathPrefix("/").Subrouter()
-	jsonRouter.Use(s.contentJsonMiddleware)
-
 	textHandler := text.New()
-	textHandler.Register(jsonRouter)
+	textHandler.Register(s.router)
 
 	imgHandler := img.New(s.logger)
 	imgHandler.Register(s.router)
 
+	pingHandler := ping.New(s.config.Key)
+	pingHandler.Register(s.router)
+
 	if s.store != nil {
 		jwtHandler := jwt.New(s.store, s.config.Key, s.config.LifeSpan)
 		jwtHandler.Register(s.router)
+
+		privateRouter := s.router.PathPrefix("/private/").Subrouter()
+		privateRouter.Use(s.bearerMiddleware)
+
+		privateTextHandler := text.New()
+		privateTextHandler.Register(privateRouter)
+
+		privateImgHandler := img.New(s.logger)
+		privateImgHandler.Register(privateRouter)
 	} else {
-		s.logger.Infof("the server is not connected to the database. routes /jwt/** is not available")
+		s.logger.Warnf("the server is not connected to the database. jwt and private endpoints is not available")
 	}
-
-	privateRouter := s.router.PathPrefix("/private/").Subrouter()
-	privateRouter.Use(s.bearerMiddleware)
-
-	privateJsonRouter := privateRouter.PathPrefix("/").Subrouter()
-	privateJsonRouter.Use(s.contentJsonMiddleware)
-
-	privateTextHandler := text.New()
-	privateTextHandler.Register(privateJsonRouter)
-
-	privateImgHandler := img.New(s.logger)
-	privateImgHandler.Register(privateRouter)
 }
