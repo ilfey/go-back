@@ -42,7 +42,7 @@ func (h *handler) handleRegister() http.HandlerFunc {
 			res.Write(w)
 			return
 		}
-		
+
 		// create user
 		if err := h.store.User().Create(context.TODO(), user); err != nil {
 			res := resp.NewErrorResponse(http.StatusBadRequest, "user not created")
@@ -69,12 +69,25 @@ func (h *handler) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		// get user by username
-		userExists, err := h.store.User().FindByUsername(context.Background(), user.Username)
-		if err != nil {
-			res := resp.NewErrorResponse(http.StatusUnauthorized, "user is not exists")
-			res.Write(w)
-			return
+		var userExists *models.User
+		if len(user.Email) == 0 {
+			// get user by username
+			var err error
+			userExists, err = h.store.User().FindByUsername(context.Background(), user.Username)
+			if err != nil {
+				res := resp.NewErrorResponse(http.StatusUnauthorized, "user is not exists")
+				res.Write(w)
+				return
+			}
+		} else {
+			// get user by email
+			var err error
+			userExists, err = h.store.User().FindByEmail(context.Background(), user.Email)
+			if err != nil {
+				res := resp.NewErrorResponse(http.StatusUnauthorized, "user is not exists")
+				res.Write(w)
+				return
+			}
 		}
 
 		// compare passwords
