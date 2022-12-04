@@ -61,7 +61,7 @@ func (h *handler) handleImage() http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			ctx.EncodePNG(w)
 
-		case "jpeg":
+		case "jpg":
 			// send jpg
 			w.WriteHeader(http.StatusOK)
 			jpeg.Encode(w, ctx.Image(), &jpeg.Options{
