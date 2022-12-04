@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/ilfey/go-back/internal/app/endpoints/handlers"
+	"github.com/ilfey/go-back/internal/pkg/resp"
 )
 
 type handler struct {
@@ -22,133 +23,64 @@ func New() handlers.Handler {
 }
 
 func (h *handler) Register(router *mux.Router) {
-	router.HandleFunc("/text/word", h.handleWords())           // queries: amount=[0-100]
-	router.HandleFunc("/text/sentence", h.handleSentences())   // queries: amount=[0-100]
-	router.HandleFunc("/text/paragraph", h.handleParagraphs()) // queries: amount=[0-100]
+	router.HandleFunc("/text/{type:word|sentence|paragraph}", h.handleText()) // queries: amount=[1-100]
 }
 
-func (h *handler) handleWords() http.HandlerFunc {
+func (h *handler) handleText() http.HandlerFunc {
 	type response struct {
-		Words string `json:"words"`
+		Text string `json:"text"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		amounts := r.URL.Query()["amount"]
 
-		var resp response
-
+		var amount int
 		// parse query: amount
 		if len(amounts) != 0 {
 			// parse int
-			amount, err := strconv.Atoi(amounts[0])
-			if err != nil || amount < 0 || amount > 100 {
-				http.Error(w, "error: amount value not parsed. you can specify a value in the range [0-100]", http.StatusPreconditionFailed)
+			var err error
+			amount, err = strconv.Atoi(amounts[0])
+			if err != nil || amount < 1 || amount > 100 {
+				res := resp.NewErrorResponse(http.StatusPreconditionFailed, "amount value not parsed. you can specify a value in the range [1-100]")
+				res.Write(w)
 				return
 			}
-
-			// generate words
-			resp = response{
-				Words: h.txtGen.Words(amount),
-			}
 		} else {
+			amount = 1
+		}
+
+		// generate words
+		var res response
+
+		switch mux.Vars(r)["type"] {
+		case "word":
 			// generate word
-			resp = response{
-				Words: h.txtGen.Word(),
+			res = response{
+				Text: h.txtGen.Words(amount),
+			}
+
+		case "sentence":
+			// generate sentence
+			res = response{
+				Text: h.txtGen.Sentences(amount),
+			}
+
+		case "paragraph":
+			// generate paragraph
+			res = response{
+				Text: h.txtGen.Paragraphs(amount),
 			}
 		}
 
 		// convert to json
-		b, err := json.Marshal(resp)
+		j, err := json.Marshal(res)
 		if err != nil {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			res := resp.NewErrorResponse(http.StatusInternalServerError, "error creating response")
+			res.Write(w)
 			return
 		}
 
 		w.WriteHeader(200)
-		w.Write(b)
-	}
-}
-
-func (h *handler) handleSentences() http.HandlerFunc {
-	type response struct {
-		Sentences string `json:"sentences"`
-	}
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		amounts := r.URL.Query()["amount"]
-
-		var resp response
-
-		// parse query: amount
-		if len(amounts) != 0 {
-			// parse int
-			amount, err := strconv.Atoi(amounts[0])
-			if err != nil || amount < 0 || amount > 100 {
-				http.Error(w, "error: amount value not parsed. you can specify a value in the range [0-100]", http.StatusPreconditionFailed)
-				return
-			}
-
-			// generate words
-			resp = response{
-				Sentences: h.txtGen.Sentences(amount),
-			}
-		} else {
-			// generate word
-			resp = response{
-				Sentences: h.txtGen.Sentence(),
-			}
-		}
-
-		// convert to json
-		b, err := json.Marshal(resp)
-		if err != nil {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		w.WriteHeader(200)
-		w.Write(b)
-	}
-}
-
-func (h *handler) handleParagraphs() http.HandlerFunc {
-	type response struct {
-		Paragraphs string `json:"paragraphs"`
-	}
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		amounts := r.URL.Query()["amount"]
-
-		var resp response
-
-		// parse query: amount
-		if len(amounts) != 0 {
-			// parse int
-			amount, err := strconv.Atoi(amounts[0])
-			if err != nil || amount < 0 || amount > 100 {
-				http.Error(w, "error: amount value not parsed. you can specify a value in the range [0-100]", http.StatusPreconditionFailed)
-				return
-			}
-
-			// generate words
-			resp = response{
-				Paragraphs: h.txtGen.Paragraphs(amount),
-			}
-		} else {
-			// generate word
-			resp = response{
-				Paragraphs: h.txtGen.Paragraph(),
-			}
-		}
-
-		// convert to json
-		b, err := json.Marshal(resp)
-		if err != nil {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		w.WriteHeader(200)
-		w.Write(b)
+		w.Write(j)
 	}
 }
