@@ -1,10 +1,14 @@
-package repositories
+package store
 
 import (
 	"context"
 
-	"github.com/ilfey/go-back/internal/app/store/models"
+	"github.com/ilfey/go-back/internal/pkg/store/models"
 )
+
+type Store struct {
+	User UserRepository
+}
 
 type UserRepository interface {
 	Create(ctx context.Context, u *models.User) error

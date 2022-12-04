@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -8,7 +9,10 @@ import (
 
 	"github.com/ilfey/go-back/internal/app/config"
 	"github.com/ilfey/go-back/internal/app/server"
+	"github.com/ilfey/go-back/internal/pkg/store/pgsql"
+	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -40,9 +44,26 @@ func main() {
 		LifeSpan:    lifeSpan,
 	}
 
+	// create logger
+	logger, err := CreateLogger(config)
+	if err != nil {
+		logrus.Panicf("logger configuration error: %s", err.Error())
+	}
+
+	// create database connection
+	db, err := pgx.Connect(context.Background(), config.DatabaseUrl)
+	if err != nil {
+		logger.Error(err)
+	} else {
+		logger.Info("server connected to db")
+	}
+
+	// create store
+	store := pgsql.New(db, logger)
+
 	s := server.New()
 
-	if err := s.Start(config); err != nil {
+	if err := s.Start(config, store, logger); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -64,4 +85,17 @@ func getEnvInt(key string, fallback int) int {
 		return value
 	}
 	return fallback
+}
+
+func CreateLogger(config *config.Config) (*logrus.Logger, error) {
+	logger := logrus.New()
+	level, err := logrus.ParseLevel(config.LogLevel)
+
+	if err != nil {
+		return nil, err
+	}
+
+	logger.SetLevel(level)
+
+	return logger, nil
 }

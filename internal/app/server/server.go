@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/gorilla/handlers"
@@ -11,14 +10,12 @@ import (
 	"github.com/ilfey/go-back/internal/app/endpoints/jwt"
 	"github.com/ilfey/go-back/internal/app/endpoints/ping"
 	"github.com/ilfey/go-back/internal/app/endpoints/text"
-	"github.com/ilfey/go-back/internal/app/store/sqlstore"
-	"github.com/jackc/pgx/v5"
+	"github.com/ilfey/go-back/internal/pkg/store"
 	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
-	db     *pgx.Conn
-	store  *sqlstore.Store
+	store  *store.Store
 	config *config.Config
 	logger *logrus.Logger
 	router *mux.Router
@@ -26,27 +23,15 @@ type Server struct {
 
 func New() *Server {
 	return &Server{
-		logger: logrus.New(),
 		router: mux.NewRouter(),
 	}
 }
 
-func (s *Server) Start(config *config.Config) error {
+func (s *Server) Start(config *config.Config, store *store.Store, logger *logrus.Logger) error {
 
 	s.config = config
-
-	if err := s.configureLogger(); err != nil {
-		return err
-	}
-
-	db, err := pgx.Connect(context.Background(), s.config.DatabaseUrl)
-	if err != nil {
-		logrus.Error(err)
-	} else {
-		s.db = db
-		s.store = sqlstore.New(db, s.logger)
-		logrus.Info("server connected to db")
-	}
+	s.store = store
+	s.logger = logger
 
 	s.configureRouter()
 
@@ -65,18 +50,6 @@ func (s *Server) Start(config *config.Config) error {
 	}
 
 	return http.ListenAndServe(s.config.Address, s.router)
-}
-
-func (s *Server) configureLogger() error {
-	level, err := logrus.ParseLevel(s.config.LogLevel)
-
-	if err != nil {
-		return err
-	}
-
-	s.logger.SetLevel(level)
-
-	return nil
 }
 
 func (s *Server) configureRouter() {
