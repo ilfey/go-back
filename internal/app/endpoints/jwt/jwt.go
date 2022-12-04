@@ -38,19 +38,19 @@ func (h *handler) handleRegister() http.HandlerFunc {
 		// parse user
 		var user *models.User
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			res := resp.NewErrorResponse(http.StatusBadRequest, "bad request")
+			res := resp.New(http.StatusBadRequest, "bad request")
 			res.Write(w)
 			return
 		}
 
 		// create user
 		if err := h.store.User().Create(context.TODO(), user); err != nil {
-			res := resp.NewErrorResponse(http.StatusBadRequest, "user not created")
+			res := resp.New(http.StatusBadRequest, "user not created")
 			res.Write(w)
 			return
 		}
 
-		res := resp.NewErrorResponse(http.StatusCreated, "user created")
+		res := resp.New(http.StatusCreated, "user created")
 		res.Write(w)
 	}
 }
@@ -64,7 +64,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 		// parse user
 		var user *models.User
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			res := resp.NewErrorResponse(http.StatusBadRequest, "bad request")
+			res := resp.New(http.StatusBadRequest, "bad request")
 			res.Write(w)
 			return
 		}
@@ -75,7 +75,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 			var err error
 			userExists, err = h.store.User().FindByUsername(context.Background(), user.Username)
 			if err != nil {
-				res := resp.NewErrorResponse(http.StatusUnauthorized, "user is not exists")
+				res := resp.New(http.StatusUnauthorized, "user is not exists")
 				res.Write(w)
 				return
 			}
@@ -84,7 +84,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 			var err error
 			userExists, err = h.store.User().FindByEmail(context.Background(), user.Email)
 			if err != nil {
-				res := resp.NewErrorResponse(http.StatusUnauthorized, "user is not exists")
+				res := resp.New(http.StatusUnauthorized, "user is not exists")
 				res.Write(w)
 				return
 			}
@@ -104,7 +104,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 			// generate access token
 			accessToken, err := token.SignedString(h.key)
 			if err != nil {
-				res := resp.NewErrorResponse(http.StatusInternalServerError, "failed to create token")
+				res := resp.New(http.StatusInternalServerError, "failed to create token")
 				res.Write(w)
 				return
 			}
@@ -114,7 +114,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 				Token: accessToken,
 			})
 			if err != nil {
-				res := resp.NewErrorResponse(http.StatusInternalServerError, "error creating response")
+				res := resp.New(http.StatusInternalServerError, "error creating response")
 				res.Write(w)
 				return
 			}
@@ -125,7 +125,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 		}
 
 		// password is not valid
-		res := resp.NewErrorResponse(http.StatusUnauthorized, "password is not valid")
+		res := resp.New(http.StatusUnauthorized, "password is not valid")
 		res.Write(w)
 	}
 }

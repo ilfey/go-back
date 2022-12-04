@@ -11,7 +11,7 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-func NewErrorResponse(code int, message string) *ErrorResponse {
+func New(code int, message string) *ErrorResponse {
 	return &ErrorResponse{
 		Code:    code,
 		Message: message,

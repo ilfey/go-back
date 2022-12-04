@@ -41,7 +41,7 @@ func (h *handler) handleText() http.HandlerFunc {
 			var err error
 			amount, err = strconv.Atoi(amounts[0])
 			if err != nil || amount < 1 || amount > 100 {
-				res := resp.NewErrorResponse(http.StatusPreconditionFailed, "amount value not parsed. you can specify a value in the range [1-100]")
+				res := resp.New(http.StatusPreconditionFailed, "amount value not parsed. you can specify a value in the range [1-100]")
 				res.Write(w)
 				return
 			}
@@ -75,7 +75,7 @@ func (h *handler) handleText() http.HandlerFunc {
 		// convert to json
 		j, err := json.Marshal(res)
 		if err != nil {
-			res := resp.NewErrorResponse(http.StatusInternalServerError, "error creating response")
+			res := resp.New(http.StatusInternalServerError, "error creating response")
 			res.Write(w)
 			return
 		}

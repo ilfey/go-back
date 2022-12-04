@@ -46,7 +46,7 @@ func (h *handler) handlePing() http.HandlerFunc {
 
 		j, err := json.Marshal(&res)
 		if err != nil {
-			res := resp.NewErrorResponse(http.StatusInternalServerError, "error creating response")
+			res := resp.New(http.StatusInternalServerError, "error creating response")
 			res.Write(w)
 			return
 		}
