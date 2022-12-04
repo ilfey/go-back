@@ -42,7 +42,7 @@ func (h *handler) handleImage() http.HandlerFunc {
 		// parse imageParams
 		params, code, err := parseImageParams(r)
 		if err != nil {
-			res := resp.NewErrorResponse(code, err.Error())
+			res := resp.New(code, err.Error())
 			res.Write(w)
 			return
 		}
@@ -50,7 +50,7 @@ func (h *handler) handleImage() http.HandlerFunc {
 		// create image
 		ctx, err := createImage(params, h.fontPath)
 		if err != nil {
-			res := resp.NewErrorResponse(http.StatusInternalServerError, err.Error())
+			res := resp.New(http.StatusInternalServerError, err.Error())
 			res.Write(w)
 			return
 		}
