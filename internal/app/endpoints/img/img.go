@@ -24,7 +24,7 @@ func New(logger *logrus.Logger) handlers.Handler {
 
 	fp := loadFont("arial.ttf")
 	if len(fp) == 0 {
-		log.Warn("No font")
+		log.Warn("font not found")
 	}
 
 	return &handler{
@@ -58,11 +58,13 @@ func (h *handler) handleImage() http.HandlerFunc {
 		switch params.imageType {
 		case "png":
 			// send png
+			w.Header().Set("Content-Type", "image/png")
 			w.WriteHeader(http.StatusOK)
 			ctx.EncodePNG(w)
 
 		case "jpg":
 			// send jpg
+			w.Header().Set("Content-Type", "image/jpeg")
 			w.WriteHeader(http.StatusOK)
 			jpeg.Encode(w, ctx.Image(), &jpeg.Options{
 				Quality: 30,
@@ -70,6 +72,7 @@ func (h *handler) handleImage() http.HandlerFunc {
 
 		case "gif":
 			// send gif
+			w.Header().Set("Content-Type", "image/gif")
 			w.WriteHeader(http.StatusOK)
 			gif.Encode(w, ctx.Image(), &gif.Options{
 				NumColors: 256,

@@ -9,18 +9,18 @@ import (
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gorilla/mux"
 	"github.com/ilfey/go-back/internal/app/endpoints/handlers"
-	"github.com/ilfey/go-back/internal/app/store/models"
-	"github.com/ilfey/go-back/internal/app/store/sqlstore"
 	"github.com/ilfey/go-back/internal/pkg/resp"
+	"github.com/ilfey/go-back/internal/pkg/store"
+	"github.com/ilfey/go-back/internal/pkg/store/models"
 )
 
 type handler struct {
-	store    *sqlstore.Store
+	store    *store.Store
 	key      []byte
 	lifeSpan time.Duration
 }
 
-func New(store *sqlstore.Store, key []byte, lifeSpan int) handlers.Handler {
+func New(store *store.Store, key []byte, lifeSpan int) handlers.Handler {
 	return &handler{
 		store:    store,
 		key:      key,
@@ -44,7 +44,7 @@ func (h *handler) handleRegister() http.HandlerFunc {
 		}
 
 		// create user
-		if err := h.store.User().Create(context.TODO(), user); err != nil {
+		if err := h.store.User.Create(context.TODO(), user); err != nil {
 			res := resp.New(http.StatusBadRequest, "user not created")
 			res.Write(w)
 			return
@@ -73,7 +73,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 		if len(user.Email) == 0 {
 			// get user by username
 			var err error
-			userExists, err = h.store.User().FindByUsername(context.Background(), user.Username)
+			userExists, err = h.store.User.FindByUsername(context.Background(), user.Username)
 			if err != nil {
 				res := resp.New(http.StatusUnauthorized, "user is not exists")
 				res.Write(w)
@@ -82,7 +82,7 @@ func (h *handler) handleLogin() http.HandlerFunc {
 		} else {
 			// get user by email
 			var err error
-			userExists, err = h.store.User().FindByEmail(context.Background(), user.Email)
+			userExists, err = h.store.User.FindByEmail(context.Background(), user.Email)
 			if err != nil {
 				res := resp.New(http.StatusUnauthorized, "user is not exists")
 				res.Write(w)

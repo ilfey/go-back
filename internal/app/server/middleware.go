@@ -86,6 +86,6 @@ func (s *Server) bearerMiddleware(next http.Handler) http.Handler {
 func (s *Server) contentJsonMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
-        next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r)
 	})
 }

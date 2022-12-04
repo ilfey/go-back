@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ilfey/go-back/internal/app/store/models"
+	"github.com/ilfey/go-back/internal/pkg/store/models"
 )
 
 type userRepository struct {

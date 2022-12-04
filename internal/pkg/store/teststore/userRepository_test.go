@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ilfey/go-back/internal/app/store/models"
-	"github.com/ilfey/go-back/internal/app/store/teststore"
+	"github.com/ilfey/go-back/internal/pkg/store/models"
+	"github.com/ilfey/go-back/internal/pkg/store/teststore"
 	"github.com/stretchr/testify/assert"
 )
 
