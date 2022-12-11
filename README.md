@@ -40,46 +40,39 @@ Flags will take precedence if you use flags and environment file at the same tim
 
 ## Routes
 
-|               **Route**              |         **Description**         |
-|:------------------------------------:|:-------------------------------:|
-| `/text/word`                         | Returns a random word           |
-| `/text/sentence`                     | Returns a random sentence       |
-| `/text/paragraph`                    | Returns a random paragraph      |
-| `/text/words/{count}`                | Returns count random words      |
-| `/text/paragraphs/{count}`           | Returns count random paragraphs |
-| `/text/sentences/{count}`            | Returns count random sentences  |
-| `/img/{width}x{height}.png`          | Returns a png image             |
-| `/img/{width}x{height}.jpg`          | Returns a jpg image             |
-| `/img/{width}x{height}.jpeg`         | Returns a jpeg image            |
-| `/img/{width}x{height}.gif`          | Returns a gif image             |
-| `/jwt/register`                      | Creates a new user in database  |
-| `/jwt/login`                         | Authorizes the user             |
-| `/private/text/word`                 | Returns a random word           |
-| `/private/text/sentence`             | Returns a random sentence       |
-| `/private/text/paragraph`            | Returns a random paragraph      |
-| `/private/text/words/{count}`        | Returns count random words      |
-| `/private/text/paragraphs/{count}`   | Returns count random paragraphs |
-| `/private/text/sentences/{count}`    | Returns count random sentences  |
-| `/private/img/{width}x{height}.png`  | Returns a png image             |
-| `/private/img/{width}x{height}.jpg`  | Returns a jpg image             |
-| `/private/img/{width}x{height}.jpeg` | Returns a jpeg image            |
-| `/private/img/{width}x{height}.gif`  | Returns a gif image             |
+|               **Route**                  |             **Description**             |
+|:-----------------------------------------|:----------------------------------------|
+| `/ping`                                  | Check authorization                     |
+| `/text/word?amount={count}`              | Returns the amount of random words      |
+| `/text/paragraph?amount={count}`         | Returns the amount of random paragraphs |
+| `/text/sentence?amount={count}`          | Returns the amount of random sentences  |
+| `/img/{width}x{height}.png`              | Returns a png image                     |
+| `/img/{width}x{height}.jpg`              | Returns a jpg image                     |
+| `/img/{width}x{height}.gif`              | Returns a gif image                     |
+| `/jwt/register`                          | Creates a new user in database          |
+| `/jwt/login`                             | Authorizes the user                     |
+| `/private/text/word?amount={count}`      | Returns the amount of random words      |
+| `/private/text/paragraph?amount={count}` | Returns the amount of random paragraphs |
+| `/private/text/sentence?amount={count}`  | Returns the amount of random sentences  |
+| `/private/img/{width}x{height}.png`      | Returns a png image                     |
+| `/private/img/{width}x{height}.jpg`      | Returns a jpg image                     |
+| `/private/img/{width}x{height}.gif`      | Returns a gif image                     |
 
-### Text routes
+### Text endpoints
 
-`http://127.0.0.1:8000/text/word`
+`http://127.0.0.1:8000/text/word?amount=10`
 
-![word](https://imgur.com/iAHbQMA.png)
+![word](https://imgur.com/juXNLSY.png)
 
-`http://127.0.0.1:8000/text/sentence`
+`http://127.0.0.1:8000/text/sentence?amount=2`
 
-![sentence](https://imgur.com/g4UyvKL.png)
+![sentence](https://imgur.com/bbQa0ui.png)
 
-`http://127.0.0.1:8000/text/paragraph`
+`http://127.0.0.1:8000/text/paragraph?amount=1`
 
-![paragraph](https://imgur.com/xQWqyJo.png)
+![paragraph](https://imgur.com/uolMMVx.png)
 
-### Image routes
+### Image endpoints
 
 Query params
 
@@ -89,44 +82,22 @@ Query params
 
 When setting fg or bg options you can use alpha channel: `1234` or `12345678`
 
-`http://127.0.0.1:8000/img/256x256.png`
+`http://127.0.0.1:8000/img/256x256.png?bg=121D32&fg=BF3284`
 
-![256x256 image](https://imgur.com/j97nzA5.png)
+![256x256 image](https://imgur.com/xFDdOyE.png)
 
-`http://127.0.0.1:8000/img/256x256.png?bg=00000000&fg=215&border=10`
-
-![256x256 image with transparent bg](https://imgur.com/8qi3U6z.png)
-
-### JWT routes
+### JWT endpoints
 
 `http://127.0.0.1:8000/jwt/register`
 
-Request:
-
-![register request](https://imgur.com/0KvxE6g.png)
-
-Response:
-
-![register response](https://imgur.com/Nh4EQGU.png)
+![register request](https://imgur.com/myrfpJ7.png)
 
 `http://127.0.0.1:8000/jwt/login`
 
-Request:
+![login request](https://imgur.com/MPj569q.png)
 
-![login request](https://imgur.com/Kuu2A8b.png)
+### Ping endpoint
 
-Response:
+`http://localhost:8000/ping`
 
-![login response](https://imgur.com/PAlkIO1.png)
-
-### Private requests
-
-`http://127.0.0.1:8000/private/text/word`
-
-Request:
-
-![private request](https://imgur.com/9qfs4w0.png)
-
-Response:
-
-![private response](https://imgur.com/SBLJaoW.png)
+![ping](https://imgur.com/EGgeY0G.png)

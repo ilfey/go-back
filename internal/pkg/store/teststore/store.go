@@ -1,8 +1,8 @@
 package teststore
 
 import (
-	"github.com/ilfey/go-back/internal/app/store/models"
-	"github.com/ilfey/go-back/internal/app/store/repositories"
+	"github.com/ilfey/go-back/internal/pkg/store"
+	"github.com/ilfey/go-back/internal/pkg/store/models"
 )
 
 type Store struct {
@@ -13,8 +13,7 @@ func New() *Store {
 	return &Store{}
 }
 
-// User ...
-func (s *Store) User() repositories.UserRepository {
+func (s *Store) User() store.UserRepository {
 	if s.userRepository != nil {
 		return s.userRepository
 	}

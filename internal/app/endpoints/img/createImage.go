@@ -9,26 +9,27 @@ import (
 )
 
 type imageParams struct {
-	x      int
-	y      int
-	bg     string
-	fg     string
-	tan    float64
-	border float64
+	x          int
+	y          int
+	background string
+	foreground string
+	tan        float64
+	border     float64
+	imageType  string
 }
 
-func createImage(p *imageParams) (*gg.Context, error) {
+func createImage(p *imageParams, fontPath string) (*gg.Context, error) {
 	W := float64(p.x)
 	H := float64(p.y)
 
 	ctx := gg.NewContext(p.x, p.y)
 
 	// set background
-	ctx.SetHexColor(p.bg)
+	ctx.SetHexColor(p.background)
 	ctx.Clear()
 
 	// set color and line width
-	ctx.SetHexColor(p.fg)
+	ctx.SetHexColor(p.foreground)
 	ctx.SetLineWidth(p.border)
 
 	// create border
@@ -46,7 +47,24 @@ func createImage(p *imageParams) (*gg.Context, error) {
 	// draw lines
 	ctx.Stroke()
 
-	font, err := findfont.Find("arial.ttf")
+	// calc font size
+	var fontSize float64
+	if p.x/2 < p.y {
+		fontSize = float64(p.x / 10)
+	} else {
+		fontSize = float64(p.y / 10)
+	}
+
+	ctx.LoadFontFace(fontPath, fontSize)
+
+	// set text
+	ctx.DrawStringAnchored(fmt.Sprintf("%dx%d", p.x, p.y), W/2, H/2, 0.5, 0.5)
+
+	return ctx, nil
+}
+
+func loadFont(font string) string {
+	font, err := findfont.Find(font)
 	if err != nil {
 		for _, path := range findfont.List() {
 			split := strings.Split(path, ".")
@@ -57,18 +75,5 @@ func createImage(p *imageParams) (*gg.Context, error) {
 		}
 	}
 
-	// calc font size
-	var fontSize float64
-	if p.x/2 < p.y {
-		fontSize = float64(p.x / 10)
-	} else {
-		fontSize = float64(p.y / 10)
-	}
-
-	ctx.LoadFontFace(font, fontSize)
-
-	// set text
-	ctx.DrawStringAnchored(fmt.Sprintf("%dx%d", p.x, p.y), W/2, H/2, 0.5, 0.5)
-
-	return ctx, nil
+	return font
 }
