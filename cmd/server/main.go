@@ -109,6 +109,7 @@ func initSqlite(config *config.Config, logger *logrus.Logger) (*store.Store, err
 	if err != nil {
 		return nil, err
 	}
+	logger.Info("server connected to sqlite db")
 
 	sqlStmt := `
 	CREATE TABLE IF NOT EXISTS users(
