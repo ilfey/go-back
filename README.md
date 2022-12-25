@@ -13,6 +13,7 @@ ADDRESS=0.0.0.0
 PORT=8000
 LOGLEVEL=debug
 DATABASE_URL="postgresql://ilfey:QWEasd123@localhost:5432/go-back"
+DATABASE_FILE=go-back.db
 JWT_KEY=secret
 JWT_LIFE_SPAN=24
 ```
@@ -23,6 +24,7 @@ What variables are needed?
 * `PORT` - The port that the server will listen on. Dafault: `8000`
 * `LOGLEVEL` - Server logging level. Default: `info`
 * `DATABASE_URL` - The URL of the PostgeSQL database where users will be stored. Default: `postgresql://ilfey:QWEasd123@localhost:5432/go-back`
+* `DATABASE_FILE` - The SQLite database file. Used when it is not possible to connect to the PostgreSQL database. Default: `go-back.db`
 * `JWT_KEY` - Secret key to generate JWT. Default: `secret`
 * `JWT_LIFE_SPAN` - JWT life span in hours. Default: `24`
 
@@ -35,6 +37,7 @@ Flags will take precedence if you use flags and environment file at the same tim
 * `-p` - The port that the server will listen on. Dafault: `8000`
 * `-ll` - Server logging level. Default: `info`
 * `-du` - The URL of the PostgeSQL database where users will be stored. Default: `postgresql://ilfey:QWEasd123@localhost:5432/go-back`
+* `-df` - The SQLite database file. Used when it is not possible to connect to the PostgreSQL database. Default: `go-back.db`
 * `-jk` - Secret key to generate JWT. Default: `secret`
 * `-jls` - JWT life span in hours. Default: `24`
 
