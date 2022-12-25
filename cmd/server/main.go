@@ -35,7 +35,7 @@ func main() {
 	godotenv.Load()
 
 	flag.StringVar(&databaseUrl, "du", getEnv("DATABASE_URL", "postgresql://ilfey:QWEasd123@localhost:5432/go-back"), "PostgreSQL database url")
-	flag.StringVar(&databaseFile, "df", getEnv("DATABASE_FILE", "go-back.db"), "SQLite database url")
+	flag.StringVar(&databaseFile, "df", getEnv("DATABASE_FILE", "go-back.db"), "SQLite database file")
 	flag.StringVar(&logLevel, "ll", getEnv("LOGLEVEL", "info"), "LogLevel")
 	flag.StringVar(&address, "a", getEnv("ADDRESS", "0.0.0.0"), "Address")
 	flag.StringVar(&port, "p", getEnv("PORT", "8000"), "Port")
